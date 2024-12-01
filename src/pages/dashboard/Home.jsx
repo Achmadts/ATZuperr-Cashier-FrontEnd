@@ -9,7 +9,7 @@ import {
   ArrowLeftIcon,
   ShoppingCartIcon,
   ChartBarIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 
 import Sidebar from "../../assets/components/Sidebar";
 import Skeleton from "react-loading-skeleton";
@@ -129,7 +129,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex overflow-x-hidden">
+    <div className="flex">
       <Sidebar handleLogout={handleLogout} />
 
       <div className="flex-1 bg-gray-100 p-6">

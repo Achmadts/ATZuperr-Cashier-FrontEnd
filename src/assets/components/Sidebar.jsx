@@ -50,9 +50,17 @@ function Sidebar() {
     fetchUserData();
   }, []);
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    document.getElementById("logout_modal").showModal();
+  };
+
+  const confirmLogout = () => {
     localStorage.removeItem("access_token");
     navigate("/");
+  };
+
+  const cancelLogout = () => {
+    document.getElementById("logout_modal").close();
   };
 
   if (isAdmin === null) {
@@ -70,8 +78,8 @@ function Sidebar() {
               key={index}
               className="flex items-center space-x-2 text-slate-950 hover:text-gray-400"
             >
+              <Skeleton width={20} height={20} />
               <Skeleton width={100} height={20} />
-              <Skeleton width={0} height={20} />{" "}
             </div>
           ))}
         </nav>
@@ -136,13 +144,34 @@ function Sidebar() {
           <span>Settings</span>
         </a>
         <button
-          onClick={handleLogout}
+          onClick={handleLogoutClick}
           className="flex items-center space-x-2 text-left hover:text-gray-400"
         >
           <ArrowRightOnRectangleIcon className="h-5 w-5" />
           <span>Logout</span>
         </button>
       </nav>
+
+      <dialog id="logout_modal" className="modal modal-bottom sm:modal-middle">
+        <div className="modal-box rounded-lg shadow-lg bg-white p-6">
+          <h3 className="font-bold text-lg text-gray-800">Konfirmasi Logout</h3>
+          <p className="py-4 text-gray-600">Apakah Anda yakin ingin logout?</p>
+          <div className="modal-action flex justify-end space-x-2">
+            <button
+              onClick={confirmLogout}
+              className="btn bg-red-600 text-white hover:bg-red-700 transition duration-200 ease-in-out rounded-md px-4 py-2"
+            >
+              Ya
+            </button>
+            <button
+              onClick={cancelLogout}
+              className="btn bg-gray-300 text-gray-800 hover:bg-gray-400 transition duration-200 ease-in-out rounded-md px-4 py-2"
+            >
+              Batal
+            </button>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 }
