@@ -153,7 +153,9 @@ const Dashboard = () => {
             <div className="flex flex-col sm:flex-row gap-6">
               <div
                 className="bg-white p-6 rounded-lg shadow-md flex-1"
-                style={{ maxWidth: collapsed ? "700px" : "800px" }}
+                style={{
+                  width: collapsed ? "700px" : "800px",
+                }}
               >
                 <p className="text-xl text-gray-700 mb-4">
                   Sales & Purchases of Last 7 Days
