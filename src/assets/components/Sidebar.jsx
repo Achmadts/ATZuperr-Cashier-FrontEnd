@@ -7,6 +7,12 @@ import {
   Typography,
   useTheme,
   Skeleton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Button,
 } from "@mui/material";
 import { Menu, MenuItem, Sidebar } from "react-pro-sidebar";
 import { useNavigate } from "react-router-dom";
@@ -30,6 +36,7 @@ const SideBar = () => {
   const [isAdmin, setIsAdmin] = useState(null);
   const [userName, setUserName] = useState("Loading...");
   const [menuLoading, setMenuLoading] = useState(true);
+  const [openLogoutModal, setOpenLogoutModal] = useState(false);
   const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -82,8 +89,16 @@ const SideBar = () => {
   }, []);
 
   const confirmLogout = () => {
+    setOpenLogoutModal(true);
+  };
+
+  const handleLogout = () => {
     localStorage.removeItem("access_token");
     navigate("/");
+  };
+
+  const handleClose = () => {
+    setOpenLogoutModal(false);
   };
 
   return (
@@ -166,7 +181,7 @@ const SideBar = () => {
                         {userName}
                       </Typography>
                       <Typography
-                        variant="body2" 
+                        variant="body2"
                         fontWeight="500"
                         color={colors.greenAccent[500]}
                         sx={{ fontSize: "14px" }}
@@ -241,6 +256,40 @@ const SideBar = () => {
               <MenuItem icon={<PersonOutlined />} onClick={confirmLogout}>
                 Logout
               </MenuItem>
+              <Dialog open={openLogoutModal} onClose={handleClose}>
+                <DialogTitle>Konfirmasi Logout</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    Apakah Anda yakin ingin keluar?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    onClick={handleClose}
+                    color="primary"
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: colors.blueAccent[700],
+                        color: "#fff",
+                      },
+                    }}
+                  >
+                    Batal
+                  </Button>
+                  <Button
+                    onClick={handleLogout}
+                    color="error"
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: colors.redAccent[500],
+                        color: "#fff",
+                      },
+                    }}
+                  >
+                    Ya
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </Menu>
           )}
         </Box>
