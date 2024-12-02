@@ -4,12 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Line } from "react-chartjs-2";
 import { Pie } from "react-chartjs-2";
-import {
-  CurrencyDollarIcon,
-  ArrowLeftIcon,
-  ShoppingCartIcon,
-  ChartBarIcon,
-} from '@heroicons/react/24/outline';
+import // CurrencyDollar
+// ArrowLeft,
+// ShoppingCart,
+// ChartBar,
+"@mui/icons-material";
 
 import Sidebar from "../../assets/components/Sidebar";
 import Skeleton from "react-loading-skeleton";
@@ -44,6 +43,7 @@ ChartJS.register(
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
+  const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
 
   const salesPurchasesData = {
@@ -130,46 +130,30 @@ const Dashboard = () => {
 
   return (
     <div className="flex">
-      <Sidebar handleLogout={handleLogout} />
-
+      <Sidebar handleLogout={handleLogout} setCollapsed={setCollapsed} />{" "}
+      {/* Pass setCollapsed to Sidebar */}
       <div className="flex-1 bg-gray-100 p-6">
         {userData ? (
           <>
             <Navbar userName={userData.name} />
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-6">
               <div className="bg-white p-4 rounded-lg shadow-md text-center">
-                <div className="flex items-center justify-center mb-1">
-                  <CurrencyDollarIcon className="h-8 w-8 mr-2" />
-                  <p className="text-2xl text-purple-600">$3,000.00</p>
-                </div>
                 <p className="text-xl text-gray-700">Revenue</p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow-md text-center">
-                <div className="flex items-center justify-center mb-1">
-                  <ArrowLeftIcon className="h-8 w-8 mr-2" />
-                  <p className="text-2xl text-yellow-500">$0.00</p>
-                </div>
                 <p className="text-xl text-gray-700">Sales Return</p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow-md text-center">
-                <div className="flex items-center justify-center mb-1">
-                  <ShoppingCartIcon className="h-8 w-8 mr-2" />
-                  <p className="text-2xl text-green-500">$0.00</p>
-                </div>
                 <p className="text-xl text-gray-700">Purchases Return</p>
               </div>
               <div className="bg-white p-4 rounded-lg shadow-md text-center">
-                <div className="flex items-center justify-center mb-1">
-                  <ChartBarIcon className="h-8 w-8 mr-2" />
-                  <p className="text-2xl text-blue-600">$2,200.00</p>
-                </div>
                 <p className="text-xl text-gray-700">Profit</p>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-6">
               <div
                 className="bg-white p-6 rounded-lg shadow-md flex-1"
-                style={{ maxWidth: "800px" }}
+                style={{ maxWidth: collapsed ? "700px" : "800px" }}
               >
                 <p className="text-xl text-gray-700 mb-4">
                   Sales & Purchases of Last 7 Days
@@ -216,16 +200,16 @@ const Dashboard = () => {
                 className="bg-white p-4 rounded-lg shadow-md flex-1"
                 style={{ maxWidth: "800px" }}
               >
-                <Skeleton height={30} width={`80%`} className="mb-4" />{" "}
-                <Skeleton height={300} width={`100%`} />{" "}
+                <Skeleton height={30} width={`80%`} className="mb-4" />
+                <Skeleton height={300} width={`100%`} />
               </div>
 
               <div
                 className="bg-white p-4 rounded-lg shadow-md flex-1"
                 style={{ maxWidth: "400px" }}
               >
-                <Skeleton height={30} width={`80%`} className="mb-4" />{" "}
-                <Skeleton height={300} width={`100%`} />{" "}
+                <Skeleton height={30} width={`80%`} className="mb-4" />
+                <Skeleton height={300} width={`100%`} />
               </div>
             </div>
           </div>

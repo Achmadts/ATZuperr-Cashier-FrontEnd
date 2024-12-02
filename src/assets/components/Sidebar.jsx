@@ -1,20 +1,31 @@
-import { useEffect, useState } from "react";
-import {
-  HomeIcon,
-  ShoppingCartIcon,
-  CurrencyDollarIcon,
-  ChartBarIcon,
-  CogIcon,
-  ArrowRightOnRectangleIcon,
-} from "@heroicons/react/24/outline";
-import endpoints from "../../constants/apiEndpoint";
+// eslint-disable-next-line no-unused-vars
+import React, { useEffect, useState } from "react";
+import { Avatar, Box, IconButton, Typography, useTheme } from "@mui/material";
+import { Menu, MenuItem, Sidebar } from "react-pro-sidebar";
 import { useNavigate } from "react-router-dom";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
+import { tokens } from "../../theme";
+import {
+  DashboardOutlined,
+  ContactsOutlined,
+  ReceiptOutlined,
+  PersonOutlined,
+  CalendarTodayOutlined,
+  HomeOutlined,
+  SettingsOutlined,
+  MenuOutlined,
+} from "@mui/icons-material";
+import { useSidebar } from "../../context/SidebarContext";
+import avatar from "../../assets/images/avatar.png";
+import logo from "../../assets/images/logo.png";
+import endpoints from "../../constants/apiEndpoint";
 
-function Sidebar() {
-  const [isAdmin, setIsAdmin] = useState(null);
+const SideBar = () => {
+  const { collapsed, setCollapsed } = useSidebar();
+  const [setIsAdmin] = useState(null);
+  const [userName, setUserName] = useState("Loading...");
   const navigate = useNavigate();
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -31,15 +42,16 @@ function Sidebar() {
           });
 
           if (!response.ok) {
-            throw new Error("Gagal mengambil data user");
+            throw new Error("Failed to fetch user data");
           }
 
           const data = await response.json();
 
-          if (data && data.user && typeof data.user.is_admin !== "undefined") {
+          if (data && data.user) {
+            setUserName(data.user.name || "User");
             setIsAdmin(data.user.is_admin);
           } else {
-            console.error("Data user tidak valid");
+            console.error("Invalid user data");
           }
         } catch (error) {
           console.error(error);
@@ -48,132 +60,136 @@ function Sidebar() {
     };
 
     fetchUserData();
-  }, []);
-
-  const handleLogoutClick = () => {
-    document.getElementById("logout_modal").showModal();
-  };
+  }, [setIsAdmin]);
 
   const confirmLogout = () => {
     localStorage.removeItem("access_token");
     navigate("/");
   };
 
-  const cancelLogout = () => {
-    document.getElementById("logout_modal").close();
-  };
-
-  if (isAdmin === null) {
-    return (
-      <div className="flex-col w-64 bg-slate-700 text-slate-950 h-screen p-4 sm:block hidden">
-        <div className="flex items-center space-x-2 text-lg font-bold">
-          <div className="bg-blue-500 p-2 rounded-full flex items-center justify-center">
-            <Skeleton width={30} height={30} />
-          </div>
-          <Skeleton width={100} height={20} />
-        </div>
-        <nav className="mt-10 space-y-4">
-          {[...Array(6)].map((_, index) => (
-            <div
-              key={index}
-              className="flex items-center space-x-2 text-slate-950 hover:text-gray-400"
-            >
-              <Skeleton width={20} height={20} />
-              <Skeleton width={100} height={20} />
-            </div>
-          ))}
-        </nav>
-      </div>
-    );
-  }
-
   return (
-    <div className="w-64 bg-slate-700 text-white h-screen p-4 sm:block hidden">
-      <div className="flex items-center space-x-2 text-lg font-bold">
-        <a
-          href="#"
-          className="flex items-center text-white hover:text-gray-400"
-        >
-          <div className="bg-blue-500 p-2 rounded-full flex items-center justify-center">
-            📦
-          </div>
-          <span className="ml-2">ATZuperrr Cashier</span>
-        </a>
-      </div>
-      <nav className="mt-10 space-y-4">
-        <a
-          href="#"
-          className="flex items-center space-x-2 text-white hover:text-gray-400"
-        >
-          <HomeIcon className="h-5 w-5" />
-          <span>Home</span>
-        </a>
-        <a
-          href="#"
-          className="flex items-center space-x-2 text-white hover:text-gray-400"
-        >
-          <ShoppingCartIcon className="h-5 w-5" />
-          <span>Products</span>
-        </a>
-        <a
-          href="#"
-          className="flex items-center space-x-2 text-white hover:text-gray-400"
-        >
-          <CurrencyDollarIcon className="h-5 w-5" />
-          <span>Purchases</span>
-        </a>
-        <a
-          href="#"
-          className="flex items-center space-x-2 text-white hover:text-gray-400"
-        >
-          <ChartBarIcon className="h-5 w-5" />
-          <span>Sales</span>
-        </a>
-        <a
-          href="#"
-          className="flex items-center space-x-2 text-white hover:text-gray-400"
-        >
-          <CurrencyDollarIcon className="h-5 w-5" />
-          <span>Expenses</span>
-        </a>
-        <a
-          href="#"
-          className="flex items-center space-x-2 text-white hover:text-gray-400"
-        >
-          <CogIcon className="h-5 w-5" />
-          <span>Settings</span>
-        </a>
-        <button
-          onClick={handleLogoutClick}
-          className="flex items-center space-x-2 text-left hover:text-gray-400"
-        >
-          <ArrowRightOnRectangleIcon className="h-5 w-5" />
-          <span>Logout</span>
-        </button>
-      </nav>
+    <Sidebar
+      backgroundColor={colors.primary[400]}
+      collapsed={collapsed}
+      toggled={true}
+      breakPoint="md"
+      onBackdropClick={() => setCollapsed(!collapsed)}
+    >
+      <Menu
+        menuItemStyles={{ button: { ":hover": { background: "transparent" } } }}
+      >
+        <MenuItem>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            {!collapsed && (
+              <Box display="flex" alignItems="center" gap="12px">
+                <img
+                  src={logo}
+                  alt="Logo"
+                  style={{ width: "30px", height: "30px" }}
+                />
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  color={colors.greenAccent[500]}
+                  sx={{ fontSize: "15px" }}
+                >
+                  ATZuperrr Cashier
+                </Typography>
+              </Box>
+            )}
+            <IconButton onClick={() => setCollapsed(!collapsed)}>
+              <MenuOutlined />
+            </IconButton>
+          </Box>
+        </MenuItem>
 
-      <dialog id="logout_modal" className="modal modal-bottom sm:modal-middle">
-        <div className="modal-box rounded-lg shadow-lg bg-white p-6">
-          <h3 className="font-bold text-lg text-gray-800">Konfirmasi Logout</h3>
-          <p className="py-4 text-gray-600">Apakah Anda yakin ingin logout?</p>
-          <div className="modal-action flex justify-end space-x-2">
-            <button
-              onClick={confirmLogout}
-              className="btn bg-red-600 text-white hover:bg-red-700 transition duration-200 ease-in-out rounded-md px-4 py-2"
+        {!collapsed && (
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            gap="10px"
+            mb="25px"
+          >
+            <Avatar
+              alt="avatar"
+              src={avatar}
+              sx={{ width: "100px", height: "100px" }}
+            />
+            <Box textAlign="center">
+              <Typography
+                variant="h5"
+                fontWeight="bold"
+                color={colors.gray[100]}
+                sx={{ fontSize: "18px" }}
+              >
+                {userName}
+              </Typography>
+              <Typography
+                variant="body2"
+                fontWeight="500"
+                color={colors.greenAccent[500]}
+                sx={{ fontSize: "14px" }}
+              >
+                Super Admin
+              </Typography>
+            </Box>
+          </Box>
+        )}
+
+        <Box pl={collapsed ? undefined : "5%"}>
+          <Menu menuItemStyles={{ button: { ":hover": { color: "#868dfb" } } }}>
+            <MenuItem
+              icon={<DashboardOutlined />}
+              onClick={() => navigate("/")}
             >
-              Ya
-            </button>
-            <button
-              onClick={cancelLogout}
-              className="btn bg-gray-300 text-gray-800 hover:bg-gray-400 transition duration-200 ease-in-out rounded-md px-4 py-2"
+              Dashboard
+            </MenuItem>
+            <MenuItem icon={<HomeOutlined />} onClick={() => navigate("/team")}>
+              Home
+            </MenuItem>
+            <MenuItem
+              icon={<ContactsOutlined />}
+              onClick={() => navigate("/home")}
             >
-              Batal
-            </button>
-          </div>
-        </div>
-      </dialog>
-    </div>
+              Products
+            </MenuItem>
+            <MenuItem
+              icon={<ReceiptOutlined />}
+              onClick={() => navigate("/products")}
+            >
+              Purchases
+            </MenuItem>
+            <MenuItem
+              icon={<PersonOutlined />}
+              onClick={() => navigate("/purchases")}
+            >
+              Sales
+            </MenuItem>
+            <MenuItem
+              icon={<CalendarTodayOutlined />}
+              onClick={() => navigate("/sales")}
+            >
+              Expenses
+            </MenuItem>
+            <MenuItem
+              icon={<SettingsOutlined />}
+              onClick={() => navigate("/expenses")}
+            >
+              Settings
+            </MenuItem>
+            <MenuItem icon={<PersonOutlined />} onClick={confirmLogout}>
+              Logout
+            </MenuItem>
+          </Menu>
+        </Box>
+      </Menu>
+    </Sidebar>
   );
-}
+};
 
-export default Sidebar;
+export default SideBar;
