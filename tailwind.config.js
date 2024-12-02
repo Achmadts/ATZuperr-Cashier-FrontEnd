@@ -26,7 +26,7 @@ export default {
     themes: [
       {
         mytheme: {
-          primary: '#05445E',     // Use primary1 color
+          primary: '#4cceac',     // Use primary1 color
           secondary: '#36B4E5',   // Use blue color
           accent: '#F2F3F3',      // Use background color
           neutral: '#3D4451',

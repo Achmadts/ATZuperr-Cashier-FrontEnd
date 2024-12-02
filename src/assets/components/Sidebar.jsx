@@ -249,7 +249,7 @@ const SideBar = () => {
               </MenuItem>
               <MenuItem
                 icon={<SettingsOutlined />}
-                onClick={() => navigate("/settings")}
+                onClick={() => navigate("/dashboard/profile-password")}
               >
                 Settings
               </MenuItem>
