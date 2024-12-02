@@ -1,6 +1,13 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
-import { Avatar, Box, IconButton, Typography, useTheme } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  IconButton,
+  Typography,
+  useTheme,
+  Skeleton,
+} from "@mui/material";
 import { Menu, MenuItem, Sidebar } from "react-pro-sidebar";
 import { useNavigate } from "react-router-dom";
 import { tokens } from "../../theme";
@@ -10,7 +17,6 @@ import {
   ReceiptOutlined,
   PersonOutlined,
   CalendarTodayOutlined,
-  HomeOutlined,
   SettingsOutlined,
   MenuOutlined,
 } from "@mui/icons-material";
@@ -21,8 +27,9 @@ import endpoints from "../../constants/apiEndpoint";
 
 const SideBar = () => {
   const { collapsed, setCollapsed } = useSidebar();
-  const [setIsAdmin] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(null);
   const [userName, setUserName] = useState("Loading...");
+  const [menuLoading, setMenuLoading] = useState(true);
   const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -48,19 +55,31 @@ const SideBar = () => {
           const data = await response.json();
 
           if (data && data.user) {
-            setUserName(data.user.name || "User");
+            setUserName(data.user.name || "User ");
             setIsAdmin(data.user.is_admin);
           } else {
             console.error("Invalid user data");
           }
         } catch (error) {
           console.error(error);
+        } finally {
+          menuLoading(false);
         }
+      } else {
+        menuLoading(false);
       }
     };
 
     fetchUserData();
-  }, [setIsAdmin]);
+  }, [setIsAdmin, menuLoading]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMenuLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const confirmLogout = () => {
     localStorage.removeItem("access_token");
@@ -115,77 +134,115 @@ const SideBar = () => {
             gap="10px"
             mb="25px"
           >
-            <Avatar
-              alt="avatar"
-              src={avatar}
-              sx={{ width: "100px", height: "100px" }}
-            />
-            <Box textAlign="center">
-              <Typography
-                variant="h5"
-                fontWeight="bold"
-                color={colors.gray[100]}
-                sx={{ fontSize: "18px" }}
-              >
-                {userName}
-              </Typography>
-              <Typography
-                variant="body2"
-                fontWeight="500"
-                color={colors.greenAccent[500]}
-                sx={{ fontSize: "14px" }}
-              >
-                Super Admin
-              </Typography>
-            </Box>
+            {menuLoading ? (
+              <>
+                <Skeleton variant="circular" width={100} height={100} />
+                <Box textAlign="center">
+                  <Skeleton variant="text" width="80%" height={24} />
+                  <Skeleton variant="text" width="60%" height={20} />
+                </Box>
+              </>
+            ) : (
+              <>
+                <Avatar
+                  alt="avatar"
+                  src={avatar}
+                  sx={{ width: "100px", height: "100px" }}
+                />
+                <Box textAlign="center">
+                  {menuLoading ? (
+                    <Box>
+                      <Skeleton variant="text" width="60%" height={30} />
+                      <Skeleton variant="text" width="40%" height={20} />
+                    </Box>
+                  ) : (
+                    <>
+                      <Typography
+                        variant="h5"
+                        fontWeight="bold"
+                        color={colors.gray[100]}
+                        sx={{ fontSize: "18px" }}
+                      >
+                        {userName}
+                      </Typography>
+                      <Typography
+                        variant="body2" 
+                        fontWeight="500"
+                        color={colors.greenAccent[500]}
+                        sx={{ fontSize: "14px" }}
+                      >
+                        {isAdmin === 1 ? "Admin" : "User "}
+                      </Typography>
+                    </>
+                  )}
+                </Box>
+              </>
+            )}
           </Box>
         )}
 
         <Box pl={collapsed ? undefined : "5%"}>
-          <Menu menuItemStyles={{ button: { ":hover": { color: "#868dfb" } } }}>
-            <MenuItem
-              icon={<DashboardOutlined />}
-              onClick={() => navigate("/")}
+          {menuLoading ? (
+            <Box>
+              <Skeleton variant="text" width="70%" height={50} />
+              <Skeleton variant="text" width="70%" height={50} />
+              <Skeleton variant="text" width="70%" height={50} />
+              <Skeleton variant="text" width="70%" height={50} />
+              <Skeleton variant="text" width="70%" height={50} />
+              <Skeleton variant="text" width="70%" height={50} />
+              <Skeleton variant="text" width="70%" height={50} />
+            </Box>
+          ) : (
+            <Menu
+              menuItemStyles={{ button: { ":hover": { color: "#868dfb" } } }}
             >
-              Dashboard
-            </MenuItem>
-            <MenuItem icon={<HomeOutlined />} onClick={() => navigate("/team")}>
-              Home
-            </MenuItem>
-            <MenuItem
-              icon={<ContactsOutlined />}
-              onClick={() => navigate("/home")}
-            >
-              Products
-            </MenuItem>
-            <MenuItem
-              icon={<ReceiptOutlined />}
-              onClick={() => navigate("/products")}
-            >
-              Purchases
-            </MenuItem>
-            <MenuItem
-              icon={<PersonOutlined />}
-              onClick={() => navigate("/purchases")}
-            >
-              Sales
-            </MenuItem>
-            <MenuItem
-              icon={<CalendarTodayOutlined />}
-              onClick={() => navigate("/sales")}
-            >
-              Expenses
-            </MenuItem>
-            <MenuItem
-              icon={<SettingsOutlined />}
-              onClick={() => navigate("/expenses")}
-            >
-              Settings
-            </MenuItem>
-            <MenuItem icon={<PersonOutlined />} onClick={confirmLogout}>
-              Logout
-            </MenuItem>
-          </Menu>
+              <MenuItem
+                icon={<DashboardOutlined />}
+                onClick={() => navigate("/dashboard/home")}
+                style={{
+                  color:
+                    location.pathname === "/dashboard/home"
+                      ? "#868dfb"
+                      : undefined,
+                }}
+              >
+                Dashboard
+              </MenuItem>
+              <MenuItem
+                icon={<ContactsOutlined />}
+                onClick={() => navigate("/products")}
+              >
+                Products
+              </MenuItem>
+              <MenuItem
+                icon={<ReceiptOutlined />}
+                onClick={() => navigate("/purchases")}
+              >
+                Purchases
+              </MenuItem>
+              <MenuItem
+                icon={<PersonOutlined />}
+                onClick={() => navigate("/sales")}
+              >
+                Sales
+              </MenuItem>
+              <MenuItem
+                icon={<CalendarTodayOutlined />}
+                onClick={() => navigate("/expenses")}
+              >
+                Expenses
+              </MenuItem>
+              <MenuItem
+                icon={<SettingsOutlined />}
+                onClick={() => navigate("/settings")}
+              >
+                Settings
+              </MenuItem>
+              <MenuItem icon={<PersonOutlined />} onClick={confirmLogout}>
+                Logout
+              </MenuItem>
+            </Menu>
+          )}
         </Box>
       </Menu>
     </Sidebar>

@@ -129,7 +129,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex overflow-x-hidden">
       <Sidebar handleLogout={handleLogout} setCollapsed={setCollapsed} />{" "}
       {/* Pass setCollapsed to Sidebar */}
       <div className="flex-1 bg-gray-100 p-6">
