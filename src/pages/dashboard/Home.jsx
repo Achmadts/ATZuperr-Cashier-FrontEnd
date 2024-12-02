@@ -4,11 +4,13 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Line } from "react-chartjs-2";
 import { Pie } from "react-chartjs-2";
-import // CurrencyDollar
-// ArrowLeft,
-// ShoppingCart,
-// ChartBar,
-"@mui/icons-material";
+import {
+  CurrencyExchangeOutlined,
+  ShoppingCartOutlined,
+  ArrowBackOutlined,
+  BarChartOutlined,
+} from "@mui/icons-material";
+("@mui/icons-material");
 
 import Sidebar from "../../assets/components/Sidebar";
 import Skeleton from "react-loading-skeleton";
@@ -131,23 +133,46 @@ const Dashboard = () => {
   return (
     <div className="flex overflow-x-hidden">
       <Sidebar handleLogout={handleLogout} setCollapsed={setCollapsed} />{" "}
-      {/* Pass setCollapsed to Sidebar */}
       <div className="flex-1 bg-gray-100 p-6">
         {userData ? (
           <>
             <Navbar userName={userData.name} />
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-6">
-              <div className="bg-white p-4 rounded-lg shadow-md text-center">
-                <p className="text-xl text-gray-700">Revenue</p>
+              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+                <div className="bg-greenAccent-500 p-2 rounded-full flex items-center justify-center mr-2">
+                  <CurrencyExchangeOutlined className="text-black" />
+                </div>
+                <div className="flex flex-col justify-center text-left">
+                  <p className="text-xl text-gray-700">Revenue</p>
+                  <p className="text-lg text-gray-500">$3000</p>
+                </div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-md text-center">
-                <p className="text-xl text-gray-700">Sales Return</p>
+              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+                <div className="bg-greenAccent-500 p-2 rounded-full flex items-center justify-center mr-2">
+                  <ShoppingCartOutlined className="text-black" />
+                </div>
+                <div className="flex flex-col justify-center text-left">
+                  <p className="text-xl text-gray-700">Sales Return</p>
+                  <p className="text-lg text-gray-500">$3000</p>
+                </div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-md text-center">
-                <p className="text-xl text-gray-700">Purchases Return</p>
+              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+                <div className="bg-greenAccent-500 p-2 rounded-full flex items-center justify-center mr-2">
+                  <ArrowBackOutlined className="text-black" />
+                </div>
+                <div className="flex flex-col justify-center text-left">
+                  <p className="text-xl text-gray-700">Purchases Return</p>
+                  <p className="text-lg text-gray-500">$3000</p>
+                </div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-md text-center">
-                <p className="text-xl text-gray-700">Profit</p>
+              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+                <div className="bg-greenAccent-500 p-2 rounded-full flex items-center justify-center mr-2">
+                  <BarChartOutlined className="text-black" />
+                </div>
+                <div className="flex flex-col justify-center text-left">
+                  <p className="text-xl text-gray-700">Profit</p>
+                  <p className="text-lg text-gray-500">$3000</p>
+                </div>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-6">
@@ -179,21 +204,58 @@ const Dashboard = () => {
             <Skeleton height={40} width={`100%`} />
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-6">
-              <div className="bg-white p-4 rounded-lg shadow-md text-center">
-                <Skeleton height={40} width={`60%`} />
-                <Skeleton height={20} width={`80%`} />
+              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+                <Skeleton
+                  circle={true}
+                  height={40}
+                  width={40}
+                  className="mr-2"
+                />
+                <div className="flex flex-col justify-center text-left">
+                  <Skeleton
+                    variant="text"
+                    height={20}
+                    width={"150px"}
+                    className="mb-1"
+                  />{" "}
+                  <Skeleton height={20} width={"100px"} />{" "}
+                </div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-md text-center">
-                <Skeleton height={40} width={`60%`} />
-                <Skeleton height={20} width={`80%`} />
+              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+                <Skeleton
+                  circle={true}
+                  height={40}
+                  width={40}
+                  className="mr-2"
+                />
+                <div className="flex flex-col justify-center text-left">
+                  <Skeleton height={20} width={"150px"} className="mb-1" />{" "}
+                  <Skeleton height={20} width={"100px"} />{" "}
+                </div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-md text-center">
-                <Skeleton height={40} width={`60%`} />
-                <Skeleton height={20} width={`80%`} />
+              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+                <Skeleton
+                  circle={true}
+                  height={40}
+                  width={40}
+                  className="mr-2"
+                />
+                <div className="flex flex-col justify-center text-left">
+                  <Skeleton height={20} width={"150px"} className="mb-1" />{" "}
+                  <Skeleton height={20} width={"100px"} />{" "}
+                </div>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-md text-center">
-                <Skeleton height={40} width={`60%`} />
-                <Skeleton height={20} width={`80%`} />
+              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+                <Skeleton
+                  circle={true}
+                  height={40}
+                  width={40}
+                  className="mr-2"
+                />
+                <div className="flex flex-col justify-center text-left">
+                  <Skeleton height={20} width={"150px"} className="mb-1" />{" "}
+                  <Skeleton height={20} width={"100px"} />{" "}
+                </div>
               </div>
             </div>
 
