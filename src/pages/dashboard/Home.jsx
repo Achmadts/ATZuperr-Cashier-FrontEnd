@@ -45,7 +45,7 @@ ChartJS.register(
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
-  const [collapsed, setCollapsed] = useState(false);
+  const [setCollapsed] = useState(false);
   const navigate = useNavigate();
 
   const salesPurchasesData = {
@@ -130,157 +130,114 @@ const Dashboard = () => {
     navigate("/");
   };
 
-  return (
-    <div className="flex overflow-x-hidden">
-      <Sidebar handleLogout={handleLogout} setCollapsed={setCollapsed} />{" "}
-      <div className="flex-1 bg-gray-100 p-6">
-        {userData ? (
-          <>
-            <Navbar userName={userData.name} />
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-6">
-              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
-                <div className="bg-greenAccent-500 p-2 rounded-full flex items-center justify-center mr-2">
-                  <CurrencyExchangeOutlined className="text-black" />
-                </div>
-                <div className="flex flex-col justify-center text-left">
-                  <p className="text-xl text-gray-700">Revenue</p>
-                  <p className="text-lg text-gray-500">$3000</p>
-                </div>
+return (
+  <div className="flex flex-col md:flex-row overflow-x-hidden">
+    <Sidebar handleLogout={handleLogout} setCollapsed={setCollapsed} />
+    <div className="flex-1 bg-gray-100 p-4 sm:p-6">
+      {userData ? (
+        <>
+          <Navbar userName={userData.name} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+            <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+              <div className="bg-green-500 p-2 rounded-full flex items-center justify-center mr-4">
+                <CurrencyExchangeOutlined className="text-black" />
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
-                <div className="bg-greenAccent-500 p-2 rounded-full flex items-center justify-center mr-2">
-                  <ShoppingCartOutlined className="text-black" />
-                </div>
-                <div className="flex flex-col justify-center text-left">
-                  <p className="text-xl text-gray-700">Sales Return</p>
-                  <p className="text-lg text-gray-500">$3000</p>
-                </div>
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
-                <div className="bg-greenAccent-500 p-2 rounded-full flex items-center justify-center mr-2">
-                  <ArrowBackOutlined className="text-black" />
-                </div>
-                <div className="flex flex-col justify-center text-left">
-                  <p className="text-xl text-gray-700">Purchases Return</p>
-                  <p className="text-lg text-gray-500">$3000</p>
-                </div>
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
-                <div className="bg-greenAccent-500 p-2 rounded-full flex items-center justify-center mr-2">
-                  <BarChartOutlined className="text-black" />
-                </div>
-                <div className="flex flex-col justify-center text-left">
-                  <p className="text-xl text-gray-700">Profit</p>
-                  <p className="text-lg text-gray-500">$3000</p>
-                </div>
+              <div className="flex flex-col">
+                <p className="text-lg sm:text-xl text-gray-700">Revenue</p>
+                <p className="text-sm sm:text-lg text-gray-500">$3000</p>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-6">
-              <div
-                className="bg-white p-6 rounded-lg shadow-md flex-1"
-                style={{
-                  width: collapsed ? "700px" : "800px",
-                }}
-              >
-                <p className="text-xl text-gray-700 mb-4">
-                  Sales & Purchases of Last 7 Days
+            <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+              <div className="bg-green-500 p-2 rounded-full flex items-center justify-center mr-4">
+                <ShoppingCartOutlined className="text-black" />
+              </div>
+              <div className="flex flex-col">
+                <p className="text-lg sm:text-xl text-gray-700">Sales Return</p>
+                <p className="text-sm sm:text-lg text-gray-500">$3000</p>
+              </div>
+            </div>
+            <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+              <div className="bg-green-500 p-2 rounded-full flex items-center justify-center mr-4">
+                <ArrowBackOutlined className="text-black" />
+              </div>
+              <div className="flex flex-col">
+                <p className="text-lg sm:text-xl text-gray-700">
+                  Purchases Return
                 </p>
-                <Line data={salesPurchasesData} />
-              </div>
-
-              <div
-                className="bg-white p-6 rounded-lg shadow-md flex-1"
-                style={{ maxWidth: "400px" }}
-              >
-                <p className="text-xl text-gray-700 mb-4">
-                  Overview of August, 2021
-                </p>
-                <Pie data={overviewData} />
+                <p className="text-sm sm:text-lg text-gray-500">$3000</p>
               </div>
             </div>
-          </>
-        ) : (
-          <div className="flex flex-col space-y-6">
-            <Skeleton height={40} width={`100%`} />
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-6">
-              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
-                <Skeleton
-                  circle={true}
-                  height={40}
-                  width={40}
-                  className="mr-2"
-                />
-                <div className="flex flex-col justify-center text-left">
-                  <Skeleton
-                    variant="text"
-                    height={20}
-                    width={"150px"}
-                    className="mb-1"
-                  />{" "}
-                  <Skeleton height={20} width={"100px"} />{" "}
-                </div>
+            <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
+              <div className="bg-green-500 p-2 rounded-full flex items-center justify-center mr-4">
+                <BarChartOutlined className="text-black" />
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
-                <Skeleton
-                  circle={true}
-                  height={40}
-                  width={40}
-                  className="mr-2"
-                />
-                <div className="flex flex-col justify-center text-left">
-                  <Skeleton height={20} width={"150px"} className="mb-1" />{" "}
-                  <Skeleton height={20} width={"100px"} />{" "}
-                </div>
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
-                <Skeleton
-                  circle={true}
-                  height={40}
-                  width={40}
-                  className="mr-2"
-                />
-                <div className="flex flex-col justify-center text-left">
-                  <Skeleton height={20} width={"150px"} className="mb-1" />{" "}
-                  <Skeleton height={20} width={"100px"} />{" "}
-                </div>
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow-md flex items-center">
-                <Skeleton
-                  circle={true}
-                  height={40}
-                  width={40}
-                  className="mr-2"
-                />
-                <div className="flex flex-col justify-center text-left">
-                  <Skeleton height={20} width={"150px"} className="mb-1" />{" "}
-                  <Skeleton height={20} width={"100px"} />{" "}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-6">
-              <div
-                className="bg-white p-4 rounded-lg shadow-md flex-1"
-                style={{ maxWidth: "800px" }}
-              >
-                <Skeleton height={30} width={`80%`} className="mb-4" />
-                <Skeleton height={300} width={`100%`} />
-              </div>
-
-              <div
-                className="bg-white p-4 rounded-lg shadow-md flex-1"
-                style={{ maxWidth: "400px" }}
-              >
-                <Skeleton height={30} width={`80%`} className="mb-4" />
-                <Skeleton height={300} width={`100%`} />
+              <div className="flex flex-col">
+                <p className="text-lg sm:text-xl text-gray-700">Profit</p>
+                <p className="text-sm sm:text-lg text-gray-500">$3000</p>
               </div>
             </div>
           </div>
-        )}
-      </div>
+
+          <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md flex-1">
+              <p className="text-lg sm:text-xl text-gray-700 mb-4">
+                Sales & Purchases of Last 7 Days
+              </p>
+              <div className="w-full">
+                <Line data={salesPurchasesData} />
+              </div>
+            </div>
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md lg:max-w-md">
+              <p className="text-lg sm:text-xl text-gray-700 mb-4">
+                Overview of August, 2021
+              </p>
+              <div className="w-full">
+                <Pie data={overviewData} />
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-col space-y-4 sm:space-y-6">
+          <Skeleton height={40} width="100%" />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
+            {Array(4)
+              .fill(0)
+              .map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-white p-4 rounded-lg shadow-md flex items-center"
+                >
+                  <Skeleton
+                    circle={true}
+                    height={40}
+                    width={40}
+                    className="mr-4"
+                  />
+                  <div className="flex flex-col">
+                    <Skeleton height={20} width="150px" className="mb-2" />
+                    <Skeleton height={20} width="100px" />
+                  </div>
+                </div>
+              ))}
+          </div>
+
+          <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md flex-1">
+              <Skeleton height={30} width="80%" className="mb-4" />
+              <Skeleton height={300} width="100%" />
+            </div>
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md lg:max-w-md">
+              <Skeleton height={30} width="80%" className="mb-4" />
+              <Skeleton height={300} width="100%" />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  );
+  </div>
+);
 };
 
 export default Dashboard;

@@ -62,7 +62,7 @@ const SideBar = () => {
           const data = await response.json();
 
           if (data && data.user) {
-            setUserName(data.user.name || "User ");
+            setUserName(data.user.name || null);
             setIsAdmin(data.user.is_admin);
           } else {
             console.error("Invalid user data");
@@ -250,6 +250,12 @@ const SideBar = () => {
               <MenuItem
                 icon={<SettingsOutlined />}
                 onClick={() => navigate("/dashboard/profile-password")}
+                style={{
+                  color:
+                    location.pathname === "/dashboard/profile-password"
+                      ? "#868dfb"
+                      : undefined,
+                }}
               >
                 Settings
               </MenuItem>
