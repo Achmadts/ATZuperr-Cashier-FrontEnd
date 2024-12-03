@@ -121,22 +121,6 @@ const UpdateProfileAndPassword = () => {
     }
   };
 
-  const showToast = (message) => {
-    const toast = document.createElement("div");
-    toast.className = `toast fixed top-4 right-4 z-50`;
-
-    toast.innerHTML = `
-    <div class="alert alert-primary shadow-lg text-white bg-primary border-4 border-background">
-      <span>${message}</span>
-    </div>`;
-
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-      toast.remove();
-    }, 3000);
-  };
-
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
@@ -163,10 +147,26 @@ const UpdateProfileAndPassword = () => {
         throw new Error("Failed to update password");
       }
 
-      alert(" Password Updated Successfully!");
+      alert("Password Updated Successfully!");
     } catch (error) {
       console.error("Error updating password:", error);
     }
+  };
+
+  const showToast = (message) => {
+    const toast = document.createElement("div");
+    toast.className = `toast fixed top-4 right-4 z-50`;
+
+    toast.innerHTML = `
+    <div class="alert alert-primary shadow-lg text-white bg-primary border-4 border-background">
+      <span>${message}</span>
+    </div>`;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.remove();
+    }, 3000);
   };
 
   return (

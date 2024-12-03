@@ -1,7 +1,5 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
-// import { jwtDecode } from "jwt-decode";
-
 import {
   Avatar,
   Box,
@@ -49,18 +47,6 @@ const SideBar = () => {
   const [openLogoutModal, setOpenLogoutModal] = useState(false);
 
   const token = localStorage.getItem("access_token");
-
-  // useEffect(() => {
-  //   if (token) {
-  //     try {
-  //       const decodedToken = jwtDecode(token);
-  //       setUserId(decodedToken.id);
-  //     } catch (error) {
-  //       console.error("Error decoding token", error);
-  //     }
-  //   }
-  // }, [token]);
-
   useEffect(() => {
     if (isSmallScreen) {
       setCollapsed(true);

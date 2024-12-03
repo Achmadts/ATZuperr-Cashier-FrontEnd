@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { IconButton, useMediaQuery, Skeleton } from "@mui/material";
 import { MenuOutlined } from "@mui/icons-material";
 import { useSidebar } from "../../context/SidebarContext";
@@ -10,12 +10,13 @@ const Navbar = () => {
   const { setCollapsed } = useSidebar();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const [loading, setLoading] = useState(true);
+  const { id } = useParams();
 
   const getTitle = (pathname) => {
     switch (pathname) {
       case "/dashboard/home":
         return "Dashboard";
-      case "/dashboard/profile-password":
+      case `/dashboard/profile-password/${id}`:
         return "Update Profile & Password";
       case "/products":
         return "Products";
