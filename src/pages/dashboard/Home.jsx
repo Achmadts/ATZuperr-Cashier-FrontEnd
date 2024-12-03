@@ -234,12 +234,12 @@ const Dashboard = () => {
             </div>
 
             <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
-              <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md flex-1">
+              <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md w-full">
                 <Skeleton height={30} width="80%" className="mb-4" />
                 <Skeleton height={300} width="100%" />
               </div>
-              <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md flex-1">
-                <Skeleton height={30} width="80%" className="mb-4" />
+              <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md w-full md:w-1/3">
+                <Skeleton height={50} width="80%" className="mb-4" />
                 <Skeleton height={300} width="100%" />
               </div>
             </div>

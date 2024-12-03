@@ -2,9 +2,8 @@ import { useState, useEffect } from "react";
 import SideBar from "../../assets/components/Sidebar";
 import Navbar from "../../assets/components/Navbar";
 import endpoints from "../../constants/apiEndpoint";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
 import { Skeleton } from "@mui/material";
 
 const UpdateProfileAndPassword = () => {
@@ -73,6 +72,8 @@ const UpdateProfileAndPassword = () => {
     const file = e.target.files[0];
     if (file) {
       setImages(file);
+    } else {
+      setImages(null);
     }
   };
 
@@ -94,13 +95,11 @@ const UpdateProfileAndPassword = () => {
     formData.append("name", name);
     formData.append("email", email);
 
-    if (images) {
+    if (images && images instanceof File) {
       formData.append("images", images);
     }
 
     try {
-      console.log("FormData before sending:", { name, email, images });
-
       const response = await fetch(`${endpoints.updateProfile}/${id}`, {
         method: "POST",
         headers: {
@@ -114,8 +113,8 @@ const UpdateProfileAndPassword = () => {
       }
 
       alert("Profile Updated Successfully!");
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      console.error("Error updating profile:", error);
       alert("An error occurred while updating your profile.");
     }
   };
@@ -173,7 +172,7 @@ const UpdateProfileAndPassword = () => {
                 <form onSubmit={handleProfileSubmit}>
                   <div className="form-group mb-4">
                     <label className="block text-gray-600 mb-2">
-                      Profile Image *
+                      Profile Image
                     </label>
                     <div className="flex justify-center mb-4">
                       {images ? (
@@ -192,13 +191,15 @@ const UpdateProfileAndPassword = () => {
                     </div>
                     <input
                       type="file"
-                      onChange={handleImageChange}
+                      onChange={(e) => handleImageChange(e.target.files[0])}
                       className="file-input block w-full border border-gray-300 rounded"
                     />
                   </div>
 
                   <div className="form-group mb-4">
-                    <label className="block text-gray-600 mb-2">Name *</label>
+                    <label className="block text-gray-600 mb-2">
+                      Name <span className="text-red-600">*</span>
+                    </label>
                     <input
                       type="text"
                       value={name}
@@ -209,7 +210,9 @@ const UpdateProfileAndPassword = () => {
                   </div>
 
                   <div className="form-group mb-4">
-                    <label className="block text-gray-600 mb-2">Email *</label>
+                    <label className="block text-gray-600 mb-2">
+                      Email <span className="text-red-600">*</span>
+                    </label>
                     <input
                       type="email"
                       value={email}
@@ -243,7 +246,7 @@ const UpdateProfileAndPassword = () => {
                 <form onSubmit={handlePasswordSubmit}>
                   <div className="form-group mb-4">
                     <label className="block text-gray-600 mb-2">
-                      Current Password *
+                      Current Password <span className="text-red-600">*</span>
                     </label>
                     <input
                       type="password"
@@ -256,7 +259,7 @@ const UpdateProfileAndPassword = () => {
 
                   <div className="form-group mb-4">
                     <label className="block text-gray-600 mb-2">
-                      New Password *
+                      New Password <span className="text-red-600">*</span>
                     </label>
                     <input
                       type="password"
@@ -269,7 +272,7 @@ const UpdateProfileAndPassword = () => {
 
                   <div className="form-group mb-4">
                     <label className="block text-gray-600 mb-2">
-                      Confirm Password *
+                      Confirm Password <span className="text-red-600">*</span>
                     </label>
                     <input
                       type="password"
