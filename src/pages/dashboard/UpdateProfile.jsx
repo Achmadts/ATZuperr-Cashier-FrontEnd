@@ -8,6 +8,7 @@ import { Skeleton } from "@mui/material";
 
 const UpdateProfileAndPassword = () => {
   const [images, setImages] = useState(null);
+  const [imagesFromDb, setImagesFromDb] = useState(null);
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("Loading...");
@@ -49,7 +50,8 @@ const UpdateProfileAndPassword = () => {
             if (data) {
               setName(data.user.name || null);
               setEmail(data.user.email || "email@example.com");
-              setImages(data.user.images || null);
+              setImagesFromDb(data.user.images || null);
+              setImages(null);
             } else {
               console.error("Invalid user data");
             }
@@ -113,7 +115,7 @@ const UpdateProfileAndPassword = () => {
       }
 
       alert("Profile Updated Successfully!");
-      // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       alert("An error occurred while updating your profile.");
     }
@@ -145,7 +147,7 @@ const UpdateProfileAndPassword = () => {
         throw new Error("Failed to update password");
       }
 
-      alert("Password Updated Successfully!");
+      alert(" Password Updated Successfully!");
     } catch (error) {
       console.error("Error updating password:", error);
     }
@@ -177,22 +179,30 @@ const UpdateProfileAndPassword = () => {
                     <div className="flex justify-center mb-4">
                       {images ? (
                         <img
-                          src={`http://localhost:8000/storage/${images}`}
+                          src={URL.createObjectURL(images)}
                           alt="Profile"
                           className="w-24 h-24 rounded-full object-cover shadow-lg"
                         />
                       ) : (
-                        <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
-                          <span className="text-gray-600 text-lg">
-                            No Image
-                          </span>
-                        </div>
+                        imagesFromDb ? (
+                          <img
+                            src={`http://localhost:8000/storage/${imagesFromDb}`}
+                            alt="Profile"
+                            className="w-24 h-24 rounded-full object-cover shadow-lg"
+                          />
+                        ) : (
+                          <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
+                            <span className="text-gray-600 text-lg">
+                              No Image
+                            </span>
+                          </div>
+                        )
                       )}
                     </div>
                     <input
                       type="file"
-                      onChange={(e) => handleImageChange(e.target.files[0])}
-                      className="file-input block w-full border border-gray-300 rounded"
+                      onChange={handleImageChange}
+                      className="file-input block w-full border-gray-300 rounded"
                     />
                   </div>
 
@@ -265,7 +275,8 @@ const UpdateProfileAndPassword = () => {
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="input input-bordered w-full border-gray-300 rounded"
+                      className="input input-bordered ```javascript
+                      w-full border-gray-300 rounded"
                       required
                     />
                   </div>
