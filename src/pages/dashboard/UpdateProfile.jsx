@@ -84,11 +84,11 @@ const UpdateProfileAndPassword = () => {
     const token = localStorage.getItem("access_token");
 
     if (!name || name.trim() === "") {
-      alert("Name is required");
+      showToast("Name is required", "error");
       return;
     }
     if (!email || email.trim() === "") {
-      alert("Email is required");
+      showToast("Email is required", "error");
       return;
     }
 
@@ -114,11 +114,27 @@ const UpdateProfileAndPassword = () => {
         throw new Error("Failed to update profile");
       }
 
-      alert("Profile Updated Successfully!");
-    // eslint-disable-next-line no-unused-vars
+      showToast("Profile Updated Successfully!", "success");
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      alert("An error occurred while updating your profile.");
+      showToast("Data gagal diupdate!", "error");
     }
+  };
+
+  const showToast = (message) => {
+    const toast = document.createElement("div");
+    toast.className = `toast fixed top-4 right-4 z-50`;
+
+    toast.innerHTML = `
+    <div class="alert alert-primary shadow-lg text-white bg-primary border-4 border-background">
+      <span>${message}</span>
+    </div>`;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.remove();
+    }, 3000);
   };
 
   const handlePasswordSubmit = async (e) => {
@@ -183,20 +199,18 @@ const UpdateProfileAndPassword = () => {
                           alt="Profile"
                           className="w-24 h-24 rounded-full object-cover shadow-lg"
                         />
+                      ) : imagesFromDb ? (
+                        <img
+                          src={`http://localhost:8000/storage/${imagesFromDb}`}
+                          alt="Profile"
+                          className="w-24 h-24 rounded-full object-cover shadow-lg"
+                        />
                       ) : (
-                        imagesFromDb ? (
-                          <img
-                            src={`http://localhost:8000/storage/${imagesFromDb}`}
-                            alt="Profile"
-                            className="w-24 h-24 rounded-full object-cover shadow-lg"
-                          />
-                        ) : (
-                          <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
-                            <span className="text-gray-600 text-lg">
-                              No Image
-                            </span>
-                          </div>
-                        )
+                        <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
+                          <span className="text-gray-600 text-lg">
+                            No Image
+                          </span>
+                        </div>
                       )}
                     </div>
                     <input
