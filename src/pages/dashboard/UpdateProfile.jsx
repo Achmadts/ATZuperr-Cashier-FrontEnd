@@ -111,7 +111,7 @@ const UpdateProfileAndPassword = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update profile");
+        showToast("Failed to update profile", "error");
       }
 
       showToast("Profile Updated Successfully!", "success");
@@ -123,42 +123,61 @@ const UpdateProfileAndPassword = () => {
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
+
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match!");
+      showToast("Passwords do not match!", "error");
       return;
     }
 
     const token = localStorage.getItem("access_token");
 
     try {
-      const response = await fetch(endpoints.changePassword, {
-        method: "PUT",
+      const formData = new FormData();
+      formData.append("_method", "PUT");
+      formData.append("currentPassword", currentPassword);
+      formData.append("password", newPassword);
+
+      const response = await fetch(`${endpoints.updateProfile}/${id}`, {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          currentPassword,
-          newPassword,
-        }),
+        body: formData,
       });
 
       if (!response.ok) {
-        throw new Error("Failed to update password");
+        const errorData = await response.json();
+        if (errorData?.data?.currentPassword) {
+          alert(errorData.data.currentPassword[0]);
+        } else if (errorData?.data?.password) {
+          alert(errorData.data.password[0]);
+        } else {
+          showToast("Failed to update password", "error");
+        }
+        return;
       }
 
-      alert("Password Updated Successfully!");
+      showToast("Password Updated Successfully!", "success");
     } catch (error) {
       console.error("Error updating password:", error);
+      showToast("Failed to update password!", "error");
     }
   };
 
-  const showToast = (message) => {
+  const showToast = (message, type) => {
     const toast = document.createElement("div");
     toast.className = `toast fixed top-4 right-4 z-50`;
 
+    let alertClass = "alert-primary";
+    let bgColor = "bg-primary";
+
+    if (type === "error") {
+      alertClass = "alert-error";
+      bgColor = "bg-red-500";
+    }
+
     toast.innerHTML = `
-    <div class="alert alert-primary shadow-lg text-white bg-primary border-4 border-background">
+    <div class="alert ${alertClass} shadow-lg text-white ${bgColor} border-4 border-background">
       <span>${message}</span>
     </div>`;
 
@@ -166,7 +185,7 @@ const UpdateProfileAndPassword = () => {
 
     setTimeout(() => {
       toast.remove();
-    }, 3000);
+    }, 5000);
   };
 
   return (
@@ -289,8 +308,7 @@ const UpdateProfileAndPassword = () => {
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="input input-bordered ```javascript
-                      w-full border-gray-300 rounded"
+                      className="input input-bordered w-full border-gray-300 rounded"
                       required
                     />
                   </div>
