@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { IconButton, useMediaQuery } from "@mui/material";
+import { IconButton, useMediaQuery, Skeleton } from "@mui/material";
 import { MenuOutlined } from "@mui/icons-material";
 import { useSidebar } from "../../context/SidebarContext";
 
@@ -9,6 +9,7 @@ const Navbar = () => {
   const location = useLocation();
   const { setCollapsed } = useSidebar();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
+  const [loading, setLoading] = useState(true);
 
   const getTitle = (pathname) => {
     switch (pathname) {
@@ -25,6 +26,14 @@ const Navbar = () => {
     }
   };
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="flex justify-between items-center mb-6">
       {!isDesktop && (
@@ -37,7 +46,11 @@ const Navbar = () => {
           <MenuOutlined />
         </IconButton>
       )}
-      <h1 className="text-xl font-bold">{getTitle(location.pathname)}</h1>
+      {loading ? (
+        <Skeleton variant="text" width={260} height={40} />
+      ) : (
+        <h1 className="text-xl font-bold">{getTitle(location.pathname)}</h1>
+      )}
     </div>
   );
 };

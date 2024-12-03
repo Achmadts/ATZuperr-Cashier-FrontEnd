@@ -2,18 +2,20 @@ import { useState, useEffect } from "react";
 import SideBar from "../../assets/components/Sidebar";
 import Navbar from "../../assets/components/Navbar";
 import endpoints from "../../constants/apiEndpoint";
+import { Skeleton } from "@mui/material";
 
 const UpdateProfileAndPassword = () => {
   const [image, setImage] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [name, setName] = useState("Loading...");
   const [email, setEmail] = useState("Loading...");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
+    const startTime = Date.now();
 
     const fetchUserData = async () => {
       if (token) {
@@ -42,13 +44,15 @@ const UpdateProfileAndPassword = () => {
         } catch (error) {
           console.error(error);
         } finally {
-          setLoading(false);
+          const endTime = Date.now();
+          const fetchDuration = endTime - startTime;
+          setTimeout(() => setLoading(false), fetchDuration);
         }
       }
     };
 
     fetchUserData();
-  }, [setLoading]);
+  }, []);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -130,60 +134,68 @@ const UpdateProfileAndPassword = () => {
               <h2 className="text-xl font-bold mb-4 text-gray-700">
                 Update Profile
               </h2>
-              <form onSubmit={handleProfileSubmit}>
-                <div className="form-group mb-4">
-                  <label className="block text-gray-600 mb-2">
-                    Profile Image *
-                  </label>
-                  <div className="flex justify-center mb-4">
-                    {image ? (
-                      <img
-                        src={image}
-                        alt="Profile"
-                        className="w-24 h-24 rounded-full object-cover shadow-lg"
-                      />
-                    ) : (
-                      <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
-                        <span className="text-gray-600 text-lg">No Image</span>
-                      </div>
-                    )}
+              {loading ? (
+                <div style={{ minHeight: "450px" }}>
+                  <Skeleton variant="rectangular" width="100%" height="100%" />
+                </div>
+              ) : (
+                <form onSubmit={handleProfileSubmit}>
+                  <div className="form-group mb-4">
+                    <label className="block text-gray-600 mb-2">
+                      Profile Image *
+                    </label>
+                    <div className="flex justify-center mb-4">
+                      {image ? (
+                        <img
+                          src={image}
+                          alt="Profile"
+                          className="w-24 h-24 rounded-full object-cover shadow-lg"
+                        />
+                      ) : (
+                        <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
+                          <span className="text-gray-600 text-lg">
+                            No Image
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      type="file"
+                      onChange={handleImageChange}
+                      className="file-input block w-full border border-gray-300 rounded"
+                    />
                   </div>
-                  <input
-                    type="file"
-                    onChange={handleImageChange}
-                    className="file-input block w-full border border-gray-300 rounded"
-                  />
-                </div>
 
-                <div className="form-group mb-4">
-                  <label className="block text-gray-600 mb-2">Name *</label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="input input-bordered w-full border-gray-300 rounded"
-                    required
-                  />
-                </div>
+                  <div className="form-group mb-4">
+                    <label className="block text-gray-600 mb-2">Name *</label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="input input-bordered w-full border-gray-300 rounded"
+                      required
+                    />
+                  </div>
 
-                <div className="form-group mb-4">
-                  <label className="block text-gray-600 mb-2">Email *</label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="input input-bordered w-full border-gray-300 rounded"
-                    required
-                  />
-                </div>
+                  <div className="form-group mb-4">
+                    <label className="block text-gray-600 mb-2">Email *</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="input input-bordered w-full border-gray-300 rounded"
+                      required
+                    />
+                  </div>
 
-                <button
-                  type="submit"
-                  className="btn btn-primary w-full bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Update Profile <i className="ml-2 bi bi-check"></i>
-                </button>
-              </form>
+                  <button
+                    type="submit"
+                    className="btn btn-primary w-full bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Update Profile <i className="ml-2 bi bi-check"></i>
+                  </button>
+                </form>
+              )}
             </div>
           </div>
 
@@ -192,53 +204,59 @@ const UpdateProfileAndPassword = () => {
               <h2 className="text-xl font-bold mb-4 text-gray-700">
                 Update Password
               </h2>
-              <form onSubmit={handlePasswordSubmit}>
-                <div className="form-group mb-4">
-                  <label className="block text-gray-600 mb-2">
-                    Current Password *
-                  </label>
-                  <input
-                    type="password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="input input-bordered w-full border-gray-300 rounded"
-                    required
-                  />
+              {loading ? (
+                <div style={{ minHeight: "450px" }}>
+                  <Skeleton variant="rectangular" width="100%" height="100%" />
                 </div>
+              ) : (
+                <form onSubmit={handlePasswordSubmit}>
+                  <div className="form-group mb-4">
+                    <label className="block text-gray-600 mb-2">
+                      Current Password *
+                    </label>
+                    <input
+                      type="password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      className="input input-bordered w-full border-gray-300 rounded"
+                      required
+                    />
+                  </div>
 
-                <div className="form-group mb-4">
-                  <label className="block text-gray-600 mb-2">
-                    New Password *
-                  </label>
-                  <input
-                    type="password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="input input-bordered w-full border-gray-300 rounded"
-                    required
-                  />
-                </div>
+                  <div className="form-group mb-4">
+                    <label className="block text-gray-600 mb-2">
+                      New Password *
+                    </label>
+                    <input
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="input input-bordered w-full border-gray-300 rounded"
+                      required
+                    />
+                  </div>
 
-                <div className="form-group mb-4">
-                  <label className="block text-gray-600 mb-2">
-                    Confirm Password *
-                  </label>
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="input input-bordered w-full border-gray-300 rounded"
-                    required
-                  />
-                </div>
+                  <div className="form-group mb-4">
+                    <label className="block text-gray-600 mb-2">
+                      Confirm Password *
+                    </label>
+                    <input
+                      type="password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="input input-bordered w-full border-gray-300 rounded"
+                      required
+                    />
+                  </div>
 
-                <button
-                  type="submit"
-                  className="btn btn-primary w-full bg-blue-600 text-white rounded hover:bg-blue-700"
-                >
-                  Update Password <i className="ml-2 bi bi-check"></i>
-                </button>
-              </form>
+                  <button
+                    type="submit"
+                    className="btn btn-primary w-full bg-blue-600 text-white rounded hover:bg-blue-700"
+                  >
+                    Update Password <i className="ml-2 bi bi-check"></i>
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>

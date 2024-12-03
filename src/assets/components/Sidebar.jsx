@@ -51,6 +51,7 @@ const SideBar = () => {
       setCollapsed(true);
     }
 
+    const startTime = Date.now();
     const fetchUserData = async () => {
       if (token) {
         try {
@@ -78,7 +79,12 @@ const SideBar = () => {
         } catch (error) {
           console.error(error);
         } finally {
-          setMenuLoading(false);
+          const endTime = Date.now();
+          const fetchDuration = endTime - startTime;
+
+          setTimeout(() => {
+            setMenuLoading(false);
+          }, fetchDuration);
         }
       } else {
         setMenuLoading(false);
@@ -87,14 +93,6 @@ const SideBar = () => {
 
     fetchUserData();
   }, [isSmallScreen, setCollapsed]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMenuLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   const confirmLogout = () => {
     setOpenLogoutModal(true);
