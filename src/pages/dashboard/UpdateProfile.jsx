@@ -2,62 +2,77 @@ import { useState, useEffect } from "react";
 import SideBar from "../../assets/components/Sidebar";
 import Navbar from "../../assets/components/Navbar";
 import endpoints from "../../constants/apiEndpoint";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useParams } from "react-router-dom";
 import { Skeleton } from "@mui/material";
 
 const UpdateProfileAndPassword = () => {
-  const [image, setImage] = useState(null);
+  const [images, setImages] = useState(null);
+  const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("Loading...");
   const [email, setEmail] = useState("Loading...");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
+    const lastInteraction = localStorage.getItem("last_interaction");
     const startTime = Date.now();
+    const currentTime = new Date().getTime();
+    const interactionTime = parseInt(lastInteraction, 10);
 
-    const fetchUserData = async () => {
-      if (token) {
-        try {
-          const response = await fetch(endpoints.user, {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
+    if (currentTime - interactionTime > 60 * 60 * 1000) {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("last_interaction");
+      navigate("/");
+    } else {
+      const fetchUserData = async () => {
+        if (token) {
+          try {
+            const response = await fetch(endpoints.user, {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
 
-          if (!response.ok) {
-            throw new Error("Failed to fetch user data");
+            if (!response.ok) {
+              throw new Error("Failed to fetch user data");
+            }
+
+            const data = await response.json();
+
+            if (data) {
+              setName(data.user.name || null);
+              setEmail(data.user.email || "email@example.com");
+              setImages(data.user.images || null);
+            } else {
+              console.error("Invalid user data");
+            }
+          } catch (error) {
+            console.error("Error fetching user data:", error);
+            toast.error("Failed to fetch user data.");
+            navigate("/");
+          } finally {
+            const endTime = Date.now();
+            const fetchDuration = endTime - startTime;
+            setTimeout(() => setLoading(false), fetchDuration);
           }
-
-          const data = await response.json();
-
-          if (data) {
-            setName(data.user.name || null);
-            setEmail(data.user.email || "email@example.com");
-            setImage(data.user.image || null);
-          } else {
-            console.error("Invalid user data");
-          }
-        } catch (error) {
-          console.error(error);
-        } finally {
-          const endTime = Date.now();
-          const fetchDuration = endTime - startTime;
-          setTimeout(() => setLoading(false), fetchDuration);
         }
-      }
-    };
-
-    fetchUserData();
-  }, []);
+      };
+      fetchUserData();
+    }
+  }, [navigate]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(URL.createObjectURL(file));
+      setImages(file);
     }
   };
 
@@ -65,18 +80,33 @@ const UpdateProfileAndPassword = () => {
     e.preventDefault();
     const token = localStorage.getItem("access_token");
 
+    if (!name || name.trim() === "") {
+      alert("Name is required");
+      return;
+    }
+    if (!email || email.trim() === "") {
+      alert("Email is required");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("_method", "PUT");
+    formData.append("name", name);
+    formData.append("email", email);
+
+    if (images) {
+      formData.append("images", images);
+    }
+
     try {
-      const response = await fetch(endpoints.user, {
-        method: "PUT",
+      console.log("FormData before sending:", { name, email, images });
+
+      const response = await fetch(`${endpoints.updateProfile}/${id}`, {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name,
-          email,
-          image,
-        }),
+        body: formData,
       });
 
       if (!response.ok) {
@@ -86,6 +116,7 @@ const UpdateProfileAndPassword = () => {
       alert("Profile Updated Successfully!");
     } catch (error) {
       console.error("Error updating profile:", error);
+      alert("An error occurred while updating your profile.");
     }
   };
 
@@ -145,9 +176,9 @@ const UpdateProfileAndPassword = () => {
                       Profile Image *
                     </label>
                     <div className="flex justify-center mb-4">
-                      {image ? (
+                      {images ? (
                         <img
-                          src={image}
+                          src={`http://localhost:8000/storage/${images}`}
                           alt="Profile"
                           className="w-24 h-24 rounded-full object-cover shadow-lg"
                         />

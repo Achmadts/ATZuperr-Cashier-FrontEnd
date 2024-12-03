@@ -6,6 +6,7 @@ const endpoints = {
     logout: `${API_BASE_URL}/logout`,
     user: `${API_BASE_URL}/user`,
     dashboard: `${API_BASE_URL}/dashboard`,
+    updateProfile: `${API_BASE_URL}/users`,
 };
 
 export default endpoints;

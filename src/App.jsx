@@ -16,7 +16,7 @@ function App() {
               <Routes>
                 <Route path="home" element={<Home />} />
                 <Route
-                  path="profile-password"
+                  path="profile-password/:id"
                   element={<UpdateProfileAndPassword />}
                 />
               </Routes>

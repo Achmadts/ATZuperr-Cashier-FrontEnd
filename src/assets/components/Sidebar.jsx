@@ -1,5 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
+// import { jwtDecode } from "jwt-decode";
+
 import {
   Avatar,
   Box,
@@ -34,24 +36,36 @@ import endpoints from "../../constants/apiEndpoint";
 
 const SideBar = () => {
   const { collapsed, setCollapsed } = useSidebar();
-  const [isAdmin, setIsAdmin] = useState(null);
-  const [userName, setUserName] = useState("Loading...");
-  const [images, setImages] = useState(null);
-  const [menuLoading, setMenuLoading] = useState(true);
-  const [openLogoutModal, setOpenLogoutModal] = useState(false);
   const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const isSmallScreen = useMediaQuery("(max-width: 768px)");
 
-  useEffect(() => {
-    const token = localStorage.getItem("access_token");
+  const [isAdmin, setIsAdmin] = useState(null);
+  const [id, setId] = useState(null);
+  const [userName, setUserName] = useState("Loading...");
+  const [images, setImages] = useState(null);
+  const [menuLoading, setMenuLoading] = useState(true);
+  const [openLogoutModal, setOpenLogoutModal] = useState(false);
 
+  const token = localStorage.getItem("access_token");
+
+  // useEffect(() => {
+  //   if (token) {
+  //     try {
+  //       const decodedToken = jwtDecode(token);
+  //       setUserId(decodedToken.id);
+  //     } catch (error) {
+  //       console.error("Error decoding token", error);
+  //     }
+  //   }
+  // }, [token]);
+
+  useEffect(() => {
     if (isSmallScreen) {
       setCollapsed(true);
     }
 
-    const startTime = Date.now();
     const fetchUserData = async () => {
       if (token) {
         try {
@@ -73,18 +87,14 @@ const SideBar = () => {
             setUserName(data.user.name || null);
             setIsAdmin(data.user.is_admin);
             setImages(data.user.images);
+            setId(data.user.id);
           } else {
             console.error("Invalid user data");
           }
         } catch (error) {
           console.error(error);
         } finally {
-          const endTime = Date.now();
-          const fetchDuration = endTime - startTime;
-
-          setTimeout(() => {
-            setMenuLoading(false);
-          }, fetchDuration);
+          setMenuLoading(false);
         }
       } else {
         setMenuLoading(false);
@@ -92,7 +102,7 @@ const SideBar = () => {
     };
 
     fetchUserData();
-  }, [isSmallScreen, setCollapsed]);
+  }, [isSmallScreen, setCollapsed, token]);
 
   const confirmLogout = () => {
     setOpenLogoutModal(true);
@@ -246,10 +256,13 @@ const SideBar = () => {
               </MenuItem>
               <MenuItem
                 icon={<SettingsOutlined />}
-                onClick={() => navigate("/dashboard/profile-password")}
+                onClick={() =>
+                  navigate(`/dashboard/profile-password/${id}`)
+                }
                 style={{
                   color:
-                    location.pathname === "/dashboard/profile-password"
+                    location.pathname ===
+                    `/dashboard/profile-password/${id}`
                       ? "#868dfb"
                       : undefined,
                 }}
