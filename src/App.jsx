@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/dashboard/Home";
 import Login from "./pages/Login";
-import { SidebarProvider } from "./context/SidebarContext";
 import UpdateProfileAndPassword from "./pages/dashboard/UpdateProfile";
+import { SidebarProvider } from "./context/SidebarContext";
 
 function App() {
   return (
@@ -10,10 +10,17 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/dashboard/home" element={<Home />} />
           <Route
-            path="/dashboard/profile-password"
-            element={<UpdateProfileAndPassword />}
+            path="/dashboard/*"
+            element={
+              <Routes>
+                <Route path="home" element={<Home />} />
+                <Route
+                  path="profile-password"
+                  element={<UpdateProfileAndPassword />}
+                />
+              </Routes>
+            }
           />
         </Routes>
       </Router>

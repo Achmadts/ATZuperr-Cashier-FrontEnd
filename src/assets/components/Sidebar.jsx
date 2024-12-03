@@ -13,6 +13,7 @@ import {
   DialogContentText,
   DialogTitle,
   Button,
+  useMediaQuery,
 } from "@mui/material";
 import { Menu, MenuItem, Sidebar } from "react-pro-sidebar";
 import { useNavigate } from "react-router-dom";
@@ -22,12 +23,12 @@ import {
   ContactsOutlined,
   ReceiptOutlined,
   PersonOutlined,
+  LogoutOutlined,
   CalendarTodayOutlined,
   SettingsOutlined,
   MenuOutlined,
 } from "@mui/icons-material";
 import { useSidebar } from "../../context/SidebarContext";
-import avatar from "../../assets/images/avatar.png";
 import logo from "../../assets/images/logo.png";
 import endpoints from "../../constants/apiEndpoint";
 
@@ -35,14 +36,20 @@ const SideBar = () => {
   const { collapsed, setCollapsed } = useSidebar();
   const [isAdmin, setIsAdmin] = useState(null);
   const [userName, setUserName] = useState("Loading...");
+  const [images, setImages] = useState(null);
   const [menuLoading, setMenuLoading] = useState(true);
   const [openLogoutModal, setOpenLogoutModal] = useState(false);
   const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const isSmallScreen = useMediaQuery("(max-width: 768px)");
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
+
+    if (isSmallScreen) {
+      setCollapsed(true);
+    }
 
     const fetchUserData = async () => {
       if (token) {
@@ -64,21 +71,22 @@ const SideBar = () => {
           if (data && data.user) {
             setUserName(data.user.name || null);
             setIsAdmin(data.user.is_admin);
+            setImages(data.user.images);
           } else {
             console.error("Invalid user data");
           }
         } catch (error) {
           console.error(error);
         } finally {
-          menuLoading(false);
+          setMenuLoading(false);
         }
       } else {
-        menuLoading(false);
+        setMenuLoading(false);
       }
     };
 
     fetchUserData();
-  }, [setIsAdmin, menuLoading]);
+  }, [isSmallScreen, setCollapsed]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -104,8 +112,8 @@ const SideBar = () => {
   return (
     <Sidebar
       backgroundColor={colors.primary[400]}
-      collapsed={collapsed}
-      toggled={true}
+      collapsed={isSmallScreen ? true : collapsed}
+      toggled={!isSmallScreen ? true : !collapsed}
       breakPoint="md"
       onBackdropClick={() => setCollapsed(!collapsed)}
     >
@@ -118,7 +126,7 @@ const SideBar = () => {
             alignItems="center"
             justifyContent="space-between"
           >
-            {!collapsed && (
+            {!collapsed && !isSmallScreen && (
               <Box display="flex" alignItems="center" gap="12px">
                 <img
                   src={logo}
@@ -141,7 +149,7 @@ const SideBar = () => {
           </Box>
         </MenuItem>
 
-        {!collapsed && (
+        {!collapsed && !isSmallScreen && (
           <Box
             display="flex"
             flexDirection="column"
@@ -153,43 +161,34 @@ const SideBar = () => {
               <>
                 <Skeleton variant="circular" width={100} height={100} />
                 <Box textAlign="center">
-                  <Skeleton variant="text" width="80%" height={24} />
-                  <Skeleton variant="text" width="60%" height={20} />
+                  <Skeleton variant="text" width={100} height={30} />
+                  <Skeleton variant="text" width={100} height={25} />
                 </Box>
               </>
             ) : (
               <>
                 <Avatar
                   alt="avatar"
-                  src={avatar}
+                  src={`http://localhost:8000/storage/${images}`}
                   sx={{ width: "100px", height: "100px" }}
                 />
                 <Box textAlign="center">
-                  {menuLoading ? (
-                    <Box>
-                      <Skeleton variant="text" width="60%" height={30} />
-                      <Skeleton variant="text" width="40%" height={20} />
-                    </Box>
-                  ) : (
-                    <>
-                      <Typography
-                        variant="h5"
-                        fontWeight="bold"
-                        color={colors.gray[100]}
-                        sx={{ fontSize: "18px" }}
-                      >
-                        {userName}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        fontWeight="500"
-                        color={colors.greenAccent[500]}
-                        sx={{ fontSize: "14px" }}
-                      >
-                        {isAdmin === 1 ? "Admin" : "User "}
-                      </Typography>
-                    </>
-                  )}
+                  <Typography
+                    variant="h5"
+                    fontWeight="bold"
+                    color={colors.gray[100]}
+                    sx={{ fontSize: "18px" }}
+                  >
+                    {userName}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    fontWeight="500"
+                    color={colors.greenAccent[500]}
+                    sx={{ fontSize: "14px" }}
+                  >
+                    {isAdmin === 1 ? "Admin" : "User"}
+                  </Typography>
                 </Box>
               </>
             )}
@@ -259,7 +258,7 @@ const SideBar = () => {
               >
                 Settings
               </MenuItem>
-              <MenuItem icon={<PersonOutlined />} onClick={confirmLogout}>
+              <MenuItem icon={<LogoutOutlined />} onClick={confirmLogout}>
                 Logout
               </MenuItem>
               <Dialog open={openLogoutModal} onClose={handleClose}>
