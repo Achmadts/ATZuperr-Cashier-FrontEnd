@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/dashboard/Home";
 import Login from "./pages/Login";
 import UpdateProfileAndPassword from "./pages/dashboard/UpdateProfile";
+import Category from "./pages/dashboard/Category";
 import { SidebarProvider } from "./context/SidebarContext";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
             element={
               <Routes>
                 <Route path="home" element={<Home />} />
+                <Route path="categories" element={<Category />} />
                 <Route
                   path="profile-password/:id"
                   element={<UpdateProfileAndPassword />}

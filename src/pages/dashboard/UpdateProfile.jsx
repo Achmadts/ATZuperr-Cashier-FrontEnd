@@ -25,6 +25,11 @@ const UpdateProfileAndPassword = () => {
     const currentTime = new Date().getTime();
     const interactionTime = parseInt(lastInteraction, 10);
 
+    if (!token || !lastInteraction) {
+      navigate("/");
+      return;
+    }
+
     if (currentTime - interactionTime > 60 * 60 * 1000) {
       localStorage.removeItem("access_token");
       localStorage.removeItem("last_interaction");
@@ -189,7 +194,7 @@ const UpdateProfileAndPassword = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex bg-gray-100">
       <SideBar />
 
       <div className="flex-grow p-6">
@@ -226,8 +231,8 @@ const UpdateProfileAndPassword = () => {
                         />
                       ) : (
                         <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
-                          <span className="text-gray-600 text-lg">
-                            No Image
+                          <span className="text-gray-600 text-lg text-center">
+                            {name}
                           </span>
                         </div>
                       )}

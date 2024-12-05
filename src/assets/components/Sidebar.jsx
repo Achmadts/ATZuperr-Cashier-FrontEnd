@@ -14,19 +14,26 @@ import {
   DialogTitle,
   Button,
   useMediaQuery,
+  Collapse,
 } from "@mui/material";
 import { Menu, MenuItem, Sidebar } from "react-pro-sidebar";
 import { useNavigate } from "react-router-dom";
 import { tokens } from "../../theme";
 import {
   DashboardOutlined,
-  ContactsOutlined,
+  Inventory2Outlined,
   ReceiptOutlined,
   PersonOutlined,
+  CloseOutlined,
   LogoutOutlined,
   CalendarTodayOutlined,
   SettingsOutlined,
   MenuOutlined,
+  ExpandMoreOutlined,
+  ExpandLessOutlined,
+  CategoryOutlined,
+  AddCircleOutlined,
+  QrCode2Outlined,
 } from "@mui/icons-material";
 import { useSidebar } from "../../context/SidebarContext";
 import logo from "../../assets/images/logo.png";
@@ -45,6 +52,7 @@ const SideBar = () => {
   const [images, setImages] = useState(null);
   const [menuLoading, setMenuLoading] = useState(true);
   const [openLogoutModal, setOpenLogoutModal] = useState(false);
+  const [expandedMenu, setExpandedMenu] = useState(null);
 
   const token = localStorage.getItem("access_token");
   useEffect(() => {
@@ -103,10 +111,14 @@ const SideBar = () => {
     setOpenLogoutModal(false);
   };
 
+  const handleExpandClick = (menuName) => {
+    setExpandedMenu((prev) => (prev === menuName ? null : menuName));
+  };
+
   return (
     <Sidebar
       backgroundColor={colors.primary[400]}
-      collapsed={isSmallScreen ? true : collapsed}
+      collapsed={isSmallScreen ? false : collapsed}
       toggled={!isSmallScreen ? true : !collapsed}
       breakPoint="md"
       onBackdropClick={() => setCollapsed(!collapsed)}
@@ -138,12 +150,12 @@ const SideBar = () => {
               </Box>
             )}
             <IconButton onClick={() => setCollapsed(!collapsed)}>
-              <MenuOutlined />
+              {collapsed ? <MenuOutlined /> : <CloseOutlined />}{" "}
             </IconButton>
           </Box>
         </MenuItem>
 
-        {!collapsed && !isSmallScreen && (
+        {!collapsed && (
           <Box
             display="flex"
             flexDirection="column"
@@ -162,7 +174,7 @@ const SideBar = () => {
             ) : (
               <>
                 <Avatar
-                  alt="avatar"
+                  alt={userName}
                   src={`http://localhost:8000/storage/${images}`}
                   sx={{ width: "100px", height: "100px" }}
                 />
@@ -217,11 +229,54 @@ const SideBar = () => {
                 Dashboard
               </MenuItem>
               <MenuItem
-                icon={<ContactsOutlined />}
-                onClick={() => navigate("/products")}
+                icon={<Inventory2Outlined />}
+                onClick={() => handleExpandClick("products")}
+                style={{
+                  color: location.pathname.includes("/dashboard/products")
+                    ? "#868dfb"
+                    : undefined,
+                }}
+                suffix={
+                  expandedMenu === "products" ? (
+                    <ExpandLessOutlined />
+                  ) : (
+                    <ExpandMoreOutlined />
+                  )
+                }
               >
                 Products
               </MenuItem>
+              <Collapse in={expandedMenu === "products"}>
+                <Box
+                  pl={4}
+                  className="max-h-[300px] overflow-y-auto scrollbar-hide"
+                >
+                  <MenuItem
+                    icon={<CategoryOutlined />}
+                    onClick={() => navigate("/dashboard/categories")}
+                  >
+                    Categories
+                  </MenuItem>
+                  <MenuItem
+                    icon={<AddCircleOutlined />}
+                    onClick={() => navigate("/dashboard/product/create")}
+                  >
+                    Create Product
+                  </MenuItem>
+                  <MenuItem
+                    icon={<Inventory2Outlined />}
+                    onClick={() => navigate("/dashboard/products")}
+                  >
+                    All Products
+                  </MenuItem>
+                  <MenuItem
+                    icon={<QrCode2Outlined />}
+                    onClick={() => navigate("/dashboard/printBarcode")}
+                  >
+                    Print Barcode
+                  </MenuItem>
+                </Box>
+              </Collapse>
               <MenuItem
                 icon={<ReceiptOutlined />}
                 onClick={() => navigate("/purchases")}
@@ -242,13 +297,10 @@ const SideBar = () => {
               </MenuItem>
               <MenuItem
                 icon={<SettingsOutlined />}
-                onClick={() =>
-                  navigate(`/dashboard/profile-password/${id}`)
-                }
+                onClick={() => navigate(`/dashboard/profile-password/${id}`)}
                 style={{
                   color:
-                    location.pathname ===
-                    `/dashboard/profile-password/${id}`
+                    location.pathname === `/dashboard/profile-password/${id}`
                       ? "#868dfb"
                       : undefined,
                 }}
