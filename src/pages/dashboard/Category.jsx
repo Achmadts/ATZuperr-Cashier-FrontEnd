@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import Sidebar from "../../assets/components/Sidebar";
 import Navbar from "../../assets/components/Navbar";
-// import { useMediaQuery } from "@mui/material";
 
 import {
   DescriptionOutlined,
@@ -14,45 +13,77 @@ import {
   DeleteOutlined,
   VisibilityOutlined,
   ArrowDropDownOutlined,
+  ArrowDropUpOutlined,
 } from "@mui/icons-material";
 
 const CategoryTable = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+  const toggleDropdown = (id) => {
+    setOpenDropdown((prevId) => (prevId === id ? null : id));
   };
 
   return (
     <div className="flex flex-col md:flex-row overflow-x-hidden">
-      <Sidebar
-      // isi
-      />
+      <Sidebar />
       <div className="flex-1 bg-gray-100 p-4 sm:p-6">
-        <Navbar
-        // isi
-        />
+        <Navbar />
         <div className="bg-white shadow rounded-lg p-6">
           <div className="flex justify-between items-center mb-4">
             <button className="btn btn-primary text-white">
               Add Category +
             </button>
             <div className="flex space-x-2">
-              {/* Button Excel */}
-              <button className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
-                <DescriptionOutlined className="mr-2" />
-                Excel
-              </button>
-              {/* Button Print */}
-              <button className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
-                <Print className="mr-2" />
-                Print
-              </button>
-              {/* Button Reload */}
-              <button className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
-                <Replay className="mr-2" />
-                Reload
-              </button>
+              <div className="hidden md:flex space-x-2">
+                <button className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
+                  <DescriptionOutlined className="mr-2" />
+                  Excel
+                </button>
+                <button className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
+                  <Print className="mr-2" />
+                  Print
+                </button>
+                <button className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
+                  <Replay className="mr-2" />
+                  Reload
+                </button>
+              </div>
+
+              <div className="md:hidden relative">
+                <button
+                  className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300"
+                  onClick={() => toggleDropdown("mobile")}
+                >
+                  More
+                  {openDropdown === "mobile" ? (
+                    <ArrowDropUpOutlined className="mr-2" />
+                  ) : (
+                    <ArrowDropDownOutlined className="mr-2" />
+                  )}
+                </button>
+                {openDropdown === "mobile" && (
+                  <div className="absolute right-0 mt-2 bg-white border border-gray-300 rounded shadow-lg w-[150px] z-50">
+                    <button
+                      className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left"
+                      onClick={() => alert("Excel clicked")}
+                    >
+                      Excel
+                    </button>
+                    <button
+                      className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left"
+                      onClick={() => alert("Print clicked")}
+                    >
+                      Print
+                    </button>
+                    <button
+                      className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left"
+                      onClick={() => alert("Reload clicked")}
+                    >
+                      Reload
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -100,7 +131,6 @@ const CategoryTable = () => {
                   <td className="border border-gray-300 px-4 py-2">Random</td>
                   <td className="border border-gray-300 px-4 py-2">0</td>
                   <td className="border border-gray-300 px-4 py-2">
-                    {/* Tombol Desktop */}
                     <div className="hidden md:flex space-x-1 justify-center items-center">
                       <button className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group">
                         Edit
@@ -118,11 +148,15 @@ const CategoryTable = () => {
                     <div className="md:hidden relative">
                       <button
                         className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1"
-                        onClick={toggleDropdown}
+                        onClick={() => toggleDropdown("row-1")}
                       >
-                        <ArrowDropDownOutlined />
+                        {openDropdown === "row-1" ? (
+                          <ArrowDropUpOutlined />
+                        ) : (
+                          <ArrowDropDownOutlined />
+                        )}
                       </button>
-                      {isDropdownOpen && (
+                      {openDropdown === "row-1" && (
                         <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded shadow-md z-10">
                           <button
                             className="block px-4 py-2 text-gray-700 hover:bg-gray-100 w-full text-left"
