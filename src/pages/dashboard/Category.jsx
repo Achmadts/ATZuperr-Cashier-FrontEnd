@@ -5,32 +5,32 @@ import Navbar from "../../assets/components/Navbar";
 import endpoints from "../../constants/apiEndpoint";
 import { toast } from "react-toastify";
 import Modal from "react-modal";
+import FilterSection from "../../assets/components/partials/FilterSection";
+import Pagination from "../../assets/components/partials/Pagination";
 import { useNavigate } from "react-router-dom";
 
 import {
   DescriptionOutlined,
   Print,
   Replay,
-  KeyboardDoubleArrowLeftRounded,
-  KeyboardDoubleArrowRightRounded,
   ModeEditOutlineRounded,
   DeleteOutlined,
-  VisibilityOutlined,
   ArrowDropDownOutlined,
   ArrowDropUpOutlined,
 } from "@mui/icons-material";
 
 const CategoryTable = () => {
+  const [categories, setCategories] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [openModal, setOpenModal] = useState(null);
-  const [setLoading] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   // const [selectedAction] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     const lastInteraction = localStorage.getItem("last_interaction");
-    const startTime = Date.now();
     const currentTime = new Date().getTime();
     const interactionTime = parseInt(lastInteraction, 10);
 
@@ -62,16 +62,50 @@ const CategoryTable = () => {
             console.error("Error fetching user data:", error);
             toast.error("Failed to fetch user data.");
             navigate("/");
-          } finally {
-            const endTime = Date.now();
-            const fetchDuration = endTime - startTime;
-            setTimeout(() => setLoading(false), fetchDuration);
           }
         }
       };
       fetchUserData();
     }
-  }, [navigate, setLoading]);
+  }, [navigate]);
+
+  const fetchCategories = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(endpoints.category, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch categories.");
+      }
+
+      const result = await response.json();
+      if (Array.isArray(result.data)) {
+        setCategories(result.data);
+      } else {
+        console.error("Data fetched is not an array:", result.data);
+        setCategories([]);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Error fetching categories.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const handleReload = () => {
+    setLoading(true);
+    fetchCategories();
+  };
 
   const toggleDropdown = (id) => {
     setOpenDropdown((prev) => (prev === id ? null : id));
@@ -101,7 +135,10 @@ const CategoryTable = () => {
                   <Print className="mr-2" />
                   Print
                 </button>
-                <button className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
+                <button
+                  className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300"
+                  onClick={handleReload}
+                >
                   <Replay className="mr-2" />
                   Reload
                 </button>
@@ -144,30 +181,8 @@ const CategoryTable = () => {
               </div>
             </div>
           </div>
-
           <hr className="border-t border-gray-300 mb-4" />
-
-          <div className="flex flex-col md:flex-row justify-between items-center mb-4">
-            <div className="w-full md:w-auto mb-2 md:mb-0">
-              <span>Show</span>
-              <select className="mx-2 border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200">
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-              entries
-            </div>
-
-            <div className="w-full md:w-auto">
-              <input
-                type="text"
-                className="w-full md:w-auto border border-gray-300 rounded-lg px-3 py-1 focus:ring focus:ring-blue-200"
-                placeholder="Search"
-              />
-            </div>
-          </div>
-
+          <FilterSection />
           <div className="overflow-x-auto">
             <table className="table w-full border border-gray-300 border-collapse">
               <thead>
@@ -178,106 +193,80 @@ const CategoryTable = () => {
                   <th className="border border-gray-300 px-4 py-2">
                     Category Name
                   </th>
-                  <th className="border border-gray-300 px-4 py-2">
-                    Products Count
-                  </th>
                   <th className="border border-gray-300 px-4 py-2">Action</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2">CA_01</td>
-                  <td className="border border-gray-300 px-4 py-2">Random</td>
-                  <td className="border border-gray-300 px-4 py-2">0</td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    <div className="md:hidden">
-                      <button
-                        className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1"
-                        onClick={() => setOpenModal(true)}
-                      >
-                        Action
-                      </button>
-                    </div>
-
-                    <Modal
-                      isOpen={openModal}
-                      onRequestClose={closeModal}
-                      contentLabel="Action Modal"
-                      className="bg-white p-4 rounded-md shadow-md w-[300px] mx-auto"
-                      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-                    >
-                      <h2 className="text-lg mb-4">Choose Action</h2>
-                      <div className="flex flex-col space-y-2">
+                {categories.map((category) => (
+                  <tr key={category.id}>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {category.kode_kategori}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {category.nama_kategori}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <div className="md:hidden">
                         <button
-                          className="btn btn-primary"
-                          onClick={() => {
-                            // alert(`${selectedAction}: Edit clicked`);
-                            closeModal();
-                          }}
+                          className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1"
+                          onClick={() => setOpenModal(true)}
                         >
-                          Edit
-                        </button>
-                        <button
-                          className="btn btn-primary"
-                          onClick={() => {
-                            // alert(`${selectedAction}: View clicked`);
-                            closeModal();
-                          }}
-                        >
-                          View
-                        </button>
-                        <button
-                          className="btn btn-error"
-                          onClick={() => {
-                            // alert(`${selectedAction}: Delete clicked`);
-                            closeModal();
-                          }}
-                        >
-                          Delete
-                        </button>
-                        <button
-                          className="btn btn-accent mt-4"
-                          onClick={closeModal}
-                        >
-                          Cancel
+                          Action
                         </button>
                       </div>
-                    </Modal>
-                    <div className="hidden md:flex space-x-1 justify-center items-center">
-                      <button className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group">
-                        Edit
-                        <ModeEditOutlineRounded className="group-hover:text-white transition duration-300" />
-                      </button>
-                      <button className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group">
-                        View
-                        <VisibilityOutlined className="group-hover:text-white transition duration-300" />
-                      </button>
-                      <button className="btn btn-sm btn-error text-white flex items-center justify-center px-2 py-1 group">
-                        Delete
-                        <DeleteOutlined className="group-hover:text-white transition duration-300" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+
+                      <Modal
+                        isOpen={openModal}
+                        onRequestClose={closeModal}
+                        contentLabel="Action Modal"
+                        className="bg-white p-4 rounded-md shadow-md w-[300px] mx-auto"
+                        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+                      >
+                        <h2 className="text-lg mb-4">Choose Action</h2>
+                        <div className="flex flex-col space-y-2">
+                          <button
+                            className="btn btn-primary"
+                            onClick={() => {
+                              // alert(`${selectedAction}: Edit clicked`);
+                              closeModal();
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="btn btn-error"
+                            onClick={() => {
+                              // alert(`${selectedAction}: Delete clicked`);
+                              closeModal();
+                            }}
+                          >
+                            Delete
+                          </button>
+                          <button
+                            className="btn btn-accent mt-4"
+                            onClick={closeModal}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </Modal>
+                      <div className="hidden md:flex space-x-1 justify-center items-center">
+                        <button className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group">
+                          Edit
+                          <ModeEditOutlineRounded className="group-hover:text-white transition duration-300" />
+                        </button>
+                        <button className="btn btn-sm btn-error text-white flex items-center justify-center px-2 py-1 group">
+                          Delete
+                          <DeleteOutlined className="group-hover:text-white transition duration-300" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
-          <div className="flex justify-between items-center mt-4">
-            <span className="text-sm self-center">
-              Showing 1 to 1 of 1 entries
-            </span>
-            <div className="flex items-center space-x-2">
-              <button className="btn btn-outline btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group">
-                <KeyboardDoubleArrowLeftRounded className="group-hover:text-white transition duration-300" />
-              </button>
-              <button className="btn btn-sm btn-primary text-white px-3 py-1">
-                1
-              </button>
-              <button className="btn btn-outline btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group">
-                <KeyboardDoubleArrowRightRounded className="text-gray-400 group-hover:text-white transition duration-300" />
-              </button>
-            </div>
-          </div>
+          <Pagination />
         </div>
         <footer className="mt-8 text-center text-sm text-gray-500">
           ATZuperrr Cashier © 2024 || Developed by{" "}
