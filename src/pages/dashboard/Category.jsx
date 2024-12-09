@@ -5,9 +5,9 @@ import Navbar from "../../assets/components/Navbar";
 import endpoints from "../../constants/apiEndpoint";
 import { toast } from "react-toastify";
 import Modal from "react-modal";
-import FilterSection from "../../assets/components/partials/FilterSection";
 import Pagination from "../../assets/components/partials/Pagination";
 import { useNavigate } from "react-router-dom";
+import { Skeleton } from "@mui/material";
 
 import {
   DescriptionOutlined,
@@ -23,9 +23,11 @@ const CategoryTable = () => {
   const [categories, setCategories] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [openModal, setOpenModal] = useState(false);
-  // eslint-disable-next-line no-unused-vars
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [showEntries, setShowEntries] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   // const [selectedAction] = useState("");
 
   useEffect(() => {
@@ -67,25 +69,31 @@ const CategoryTable = () => {
       };
       fetchUserData();
     }
-  }, [navigate]);
+  }, [navigate, currentPage, showEntries]);
 
   const fetchCategories = async () => {
     try {
+      setLoading(true);
       const token = localStorage.getItem("access_token");
-      const response = await fetch(endpoints.category, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `${endpoints.category}?page=${currentPage}&per_page=${showEntries}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch categories.");
       }
 
       const result = await response.json();
-      if (Array.isArray(result.data)) {
-        setCategories(result.data);
+
+      if (result.success && Array.isArray(result.data.data)) {
+        setCategories(result.data.data);
+        setTotalPages(result.data.meta.last_page || 1);
       } else {
         console.error("Data fetched is not an array:", result.data);
         setCategories([]);
@@ -100,7 +108,14 @@ const CategoryTable = () => {
 
   useEffect(() => {
     fetchCategories();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, showEntries]);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  useEffect(() => {}, [currentPage]);
 
   const handleReload = () => {
     setLoading(true);
@@ -115,158 +130,313 @@ const CategoryTable = () => {
     setOpenModal(false);
   };
 
+  const handleEntriesChange = (e) => {
+    setShowEntries(Number(e.target.value));
+    setCurrentPage(1);
+  };
+
   return (
     <div className="flex flex-col md:flex-row overflow-x-hidden">
       <Sidebar />
       <div className="flex-1 bg-gray-100 p-4 sm:p-6">
         <Navbar />
         <div className="bg-white shadow rounded-lg p-6">
-          <div className="flex justify-between items-center mb-4">
-            <button className="btn btn-primary text-white">
-              Add Category +
-            </button>
-            <div className="flex space-x-2">
-              <div className="hidden md:flex space-x-2">
-                <button className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
-                  <DescriptionOutlined className="mr-2" />
-                  Excel
-                </button>
-                <button className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
-                  <Print className="mr-2" />
-                  Print
-                </button>
-                <button
-                  className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300"
-                  onClick={handleReload}
-                >
-                  <Replay className="mr-2" />
-                  Reload
-                </button>
+          {loading ? (
+            <>
+              <div className="flex justify-between items-center mb-4">
+                <Skeleton
+                  variant="rectangular"
+                  width={140}
+                  height={40}
+                  className="btn text-white"
+                />
+                <div className="flex space-x-2">
+                  <div className="hidden md:flex space-x-2">
+                    <Skeleton
+                      variant="rectangular"
+                      width={103}
+                      height={40}
+                      className="flex items-center px-2 py-2 bg-gray-200 text-gray-800 rounded-lg shadow"
+                    />
+                    <Skeleton
+                      variant="rectangular"
+                      width={100}
+                      height={40}
+                      className="flex items-center px-2 py-2 bg-gray-200 text-gray-800 rounded-lg shadow"
+                    />
+                    <Skeleton
+                      variant="rectangular"
+                      width={112}
+                      height={40}
+                      className="flex items-center px-2 py-2 bg-gray-200 text-gray-800 rounded-lg shadow"
+                    />
+                  </div>
+                  <div className="md:hidden relative">
+                    <Skeleton
+                      variant="rectangular"
+                      width={100}
+                      height={40}
+                      className="flex items-center px-2 py-2 bg-gray-200 text-gray-800 rounded-lg shadow"
+                    />
+                  </div>
+                </div>
               </div>
-
-              <div className="md:hidden relative">
-                <button
-                  className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300"
-                  onClick={() => toggleDropdown("mobile")}
-                >
-                  More
-                  {openDropdown === "mobile" ? (
-                    <ArrowDropUpOutlined className="mr-2" />
-                  ) : (
-                    <ArrowDropDownOutlined className="mr-2" />
-                  )}
+            </>
+          ) : (
+            <>
+              <div className="flex justify-between items-center mb-4">
+                <button className="btn btn-primary text-white">
+                  Add Category +
                 </button>
-                {openDropdown === "mobile" && (
-                  <div className="absolute right-0 mt-2 bg-white border border-gray-300 rounded shadow-lg w-[150px] z-50">
-                    <button
-                      className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left"
-                      // onClick={() => alert("Excel clicked")}
-                    >
+                <div className="flex space-x-2">
+                  <div className="hidden md:flex space-x-2">
+                    <button className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
+                      <DescriptionOutlined className="mr-2" />
                       Excel
                     </button>
-                    <button
-                      className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left"
-                      // onClick={() => alert("Print clicked")}
-                    >
+                    <button className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
+                      <Print className="mr-2" />
                       Print
                     </button>
                     <button
-                      className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left"
-                      // onClick={() => alert("Reload clicked")}
+                      className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300"
+                      onClick={handleReload}
                     >
+                      <Replay className="mr-2" />
                       Reload
                     </button>
                   </div>
-                )}
+                  <div className="md:hidden relative">
+                    <button
+                      className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300"
+                      onClick={() => toggleDropdown("mobile")}
+                    >
+                      More
+                      {openDropdown === "mobile" ? (
+                        <ArrowDropUpOutlined className="mr-2" />
+                      ) : (
+                        <ArrowDropDownOutlined className="mr-2" />
+                      )}
+                    </button>
+                    {openDropdown === "mobile" && (
+                      <div className="absolute right-0 mt-2 bg-white border border-gray-300 rounded shadow-lg w-[150px] z-50">
+                        <button className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left">
+                          Excel
+                        </button>
+                        <button className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left">
+                          Print
+                        </button>
+                        <button className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left">
+                          Reload
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </>
+          )}
           <hr className="border-t border-gray-300 mb-4" />
-          <FilterSection />
+          <div className="flex flex-col md:flex-row justify-between items-center mb-4">
+            {loading ? (
+              <div className="w-full md:w-auto mb-2 md:mb-0">
+                <Skeleton variant="rectangular" width={180} height={30} />
+              </div>
+            ) : (
+              <div className="w-full md:w-auto mb-2 md:mb-0">
+                <span>Show</span>
+                <select
+                  value={showEntries}
+                  onChange={handleEntriesChange}
+                  className="mx-2 border border-gray-300 rounded px-2 py-1 focus:ring focus:ring-blue-200"
+                >
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                entries
+              </div>
+            )}
+
+            {loading ? (
+              <div className="w-full md:w-auto">
+                <Skeleton variant="rectangular" width={200} height={30} />
+              </div>
+            ) : (
+              <div className="w-full md:w-auto">
+                <input
+                  type="text"
+                  className="w-full md:w-auto border border-gray-300 rounded-lg px-3 py-1 focus:ring focus:ring-blue-200"
+                  placeholder="Search"
+                />
+              </div>
+            )}
+          </div>
           <div className="overflow-x-auto">
             <table className="table w-full border border-gray-300 border-collapse">
               <thead>
                 <tr className="bg-gray-200 text-center text-sm">
-                  <th className="border border-gray-300 px-4 py-2">
-                    Category Code
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2">
-                    Category Name
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2">Action</th>
+                  {loading ? (
+                    <>
+                      <th
+                        className="border border-gray-300 px-4 py-2 text-center"
+                        style={{ width: "33.33%" }}
+                      >
+                        <div className="flex justify-center">
+                          <Skeleton
+                            variant="rectangular"
+                            width="30%"
+                            height={20}
+                          />
+                        </div>
+                      </th>
+                      <th
+                        className="border border-gray-300 px-4 py-2 text-center"
+                        style={{ width: "33.33%" }}
+                      >
+                        <div className="flex justify-center">
+                          <Skeleton
+                            variant="rectangular"
+                            width="30%"
+                            height={20}
+                          />
+                        </div>
+                      </th>
+                      <th
+                        className="border border-gray-300 px-4 py-2 text-center"
+                        style={{ width: "33.33%" }}
+                      >
+                        <div className="flex justify-center">
+                          <Skeleton
+                            variant="rectangular"
+                            width="20%"
+                            height={20}
+                          />
+                        </div>
+                      </th>
+                    </>
+                  ) : (
+                    <>
+                      <th
+                        className="border border-gray-300 px-4 py-2"
+                        style={{ width: "33.33%" }}
+                      >
+                        Category Code
+                      </th>
+                      <th
+                        className="border border-gray-300 px-4 py-2"
+                        style={{ width: "33.33%" }}
+                      >
+                        Category Name
+                      </th>
+                      <th
+                        className="border border-gray-300 px-4 py-2"
+                        style={{ width: "33.33%" }}
+                      >
+                        Action
+                      </th>
+                    </>
+                  )}
                 </tr>
               </thead>
               <tbody>
-                {categories.map((category) => (
-                  <tr key={category.id}>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {category.kode_kategori}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {category.nama_kategori}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      <div className="md:hidden">
-                        <button
-                          className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1"
-                          onClick={() => setOpenModal(true)}
-                        >
-                          Action
-                        </button>
-                      </div>
-
-                      <Modal
-                        isOpen={openModal}
-                        onRequestClose={closeModal}
-                        contentLabel="Action Modal"
-                        className="bg-white p-4 rounded-md shadow-md w-[300px] mx-auto"
-                        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-                      >
-                        <h2 className="text-lg mb-4">Choose Action</h2>
-                        <div className="flex flex-col space-y-2">
-                          <button
-                            className="btn btn-primary"
-                            onClick={() => {
-                              // alert(`${selectedAction}: Edit clicked`);
-                              closeModal();
-                            }}
+                {loading
+                  ? Array.from({ length: 5 }).map((_, index) => (
+                      <tr key={index}>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <Skeleton variant="text" width="80%" />
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <Skeleton variant="text" width="80%" />
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2 flex justify-center items-center space-x-2">
+                          <Skeleton
+                            variant="rectangular"
+                            width={100}
+                            height={30}
+                          />
+                          <div className="hidden md:flex">
+                            <Skeleton
+                              variant="rectangular"
+                              width={100}
+                              height={30}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  : categories.map((category) => (
+                      <tr key={category.id}>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {category.kode_kategori}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {category.nama_kategori}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <div className="md:hidden">
+                            <button
+                              className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1"
+                              onClick={() => setOpenModal(true)}
+                            >
+                              Action
+                            </button>
+                          </div>
+                          <Modal
+                            isOpen={openModal}
+                            onRequestClose={closeModal}
+                            contentLabel="Action Modal"
+                            className="bg-white p-4 rounded-md shadow-md w-[300px] mx-auto"
+                            overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
                           >
-                            Edit
-                          </button>
-                          <button
-                            className="btn btn-error"
-                            onClick={() => {
-                              // alert(`${selectedAction}: Delete clicked`);
-                              closeModal();
-                            }}
-                          >
-                            Delete
-                          </button>
-                          <button
-                            className="btn btn-accent mt-4"
-                            onClick={closeModal}
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </Modal>
-                      <div className="hidden md:flex space-x-1 justify-center items-center">
-                        <button className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group">
-                          Edit
-                          <ModeEditOutlineRounded className="group-hover:text-white transition duration-300" />
-                        </button>
-                        <button className="btn btn-sm btn-error text-white flex items-center justify-center px-2 py-1 group">
-                          Delete
-                          <DeleteOutlined className="group-hover:text-white transition duration-300" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                            <h2 className="text-lg mb-4">Choose Action</h2>
+                            <div className="flex flex-col space-y-2">
+                              <button
+                                className="btn btn-primary"
+                                onClick={() => {
+                                  closeModal();
+                                }}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="btn btn-error"
+                                onClick={() => {
+                                  closeModal();
+                                }}
+                              >
+                                Delete
+                              </button>
+                              <button
+                                className="btn btn-accent mt-4"
+                                onClick={closeModal}
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </Modal>
+                          <div className="hidden md:flex space-x-1 justify-center items-center">
+                            <button className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group">
+                              Edit
+                              <ModeEditOutlineRounded className="group-hover:text-white transition duration-300" />
+                            </button>
+                            <button className="btn btn-sm btn-error text-white flex items-center justify-center px-2 py-1 group">
+                              Delete
+                              <DeleteOutlined className="group-hover:text-white transition duration-300" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>
-          <Pagination />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
         </div>
         <footer className="mt-8 text-center text-sm text-gray-500">
           ATZuperrr Cashier © 2024 || Developed by{" "}
