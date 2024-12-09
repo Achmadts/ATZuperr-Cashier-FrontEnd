@@ -1,12 +1,12 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useState, useEffect } from "react";
-import Sidebar from "../../assets/components/Sidebar";
-import Navbar from "../../assets/components/Navbar";
-import endpoints from "../../constants/apiEndpoint";
+import Sidebar from "../../../assets/components/Sidebar";
+import Navbar from "../../../assets/components/Navbar";
+import endpoints from "../../../constants/apiEndpoint";
 import Modal from "react-modal";
 Modal.setAppElement("#root");
-import showToast from "../../utils/showToast";
-import Pagination from "../../assets/components/partials/Pagination";
+import showToast from "../../../utils/showToast";
+import Pagination from "../../../assets/components/partials/Pagination";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@mui/material";
 
@@ -75,7 +75,7 @@ const CategoryTable = () => {
             }
             // eslint-disable-next-line no-unused-vars
           } catch (error) {
-            showToast("Failed to fetch user data.", "error");
+            showToast("Gagal mendapatkan data user.", "error");
             navigate("/");
           }
         }
@@ -113,7 +113,7 @@ const CategoryTable = () => {
       }
     } catch (error) {
       console.error(error);
-      showToast("Error fetching categories.", "error");
+      showToast("Gagal mengambil data Kategori.", "error");
     } finally {
       setLoading(false);
     }
@@ -280,7 +280,10 @@ const CategoryTable = () => {
                         <button className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left">
                           Print
                         </button>
-                        <button className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left">
+                        <button
+                          onClick={handleReload}
+                          className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left"
+                        >
                           Reload
                         </button>
                       </div>
@@ -331,7 +334,7 @@ const CategoryTable = () => {
                   />
                   <label
                     htmlFor="floating_outlined"
-                    className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4"
+                    className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-0 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4"
                   >
                     Search
                   </label>
@@ -444,7 +447,10 @@ const CategoryTable = () => {
                           <div className="md:hidden">
                             <button
                               className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1"
-                              onClick={() => setOpenModal(true)}
+                              onClick={() => {
+                                setSelectedCategory(category.id);
+                                setOpenModal(true);
+                              }}
                             >
                               Action
                             </button>
@@ -469,6 +475,7 @@ const CategoryTable = () => {
                               <button
                                 className="btn btn-error"
                                 onClick={() => {
+                                  handleDeleteCategory(category.id);
                                   closeModal();
                                 }}
                               >

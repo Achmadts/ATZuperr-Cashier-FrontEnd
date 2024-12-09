@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/dashboard/Home";
 import Login from "./pages/Login";
 import UpdateProfileAndPassword from "./pages/dashboard/UpdateProfile";
-import Category from "./pages/dashboard/Category";
+import Category from "./pages/dashboard/category/Category";
 import { SidebarProvider } from "./context/SidebarContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
