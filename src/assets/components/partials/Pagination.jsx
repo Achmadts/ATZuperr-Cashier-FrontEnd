@@ -43,21 +43,25 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
           </>
         ) : (
           <>
-            <button
-              className="btn btn-outline btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group"
-              onClick={handlePrev}
-            >
-              <KeyboardDoubleArrowLeftRounded className="group-hover:text-white transition duration-300" />
-            </button>
+            {currentPage > 1 && (
+              <button
+                className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group"
+                onClick={handlePrev}
+              >
+                <KeyboardDoubleArrowLeftRounded className="group-hover:text-white transition duration-300" />
+              </button>
+            )}
             <button className="btn btn-sm btn-primary text-white px-3 py-1">
               {currentPage}
             </button>
-            <button
-              className="btn btn-outline btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group"
-              onClick={handleNext}
-            >
-              <KeyboardDoubleArrowRightRounded className="text-gray-400 group-hover:text-white transition duration-300" />
-            </button>
+            {currentPage < totalPages && (
+              <button
+                className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group"
+                onClick={handleNext}
+              >
+                <KeyboardDoubleArrowRightRounded className="text-gray-400 group-hover:text-white transition duration-300" />
+              </button>
+            )}
           </>
         )}
       </div>

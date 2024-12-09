@@ -4,6 +4,9 @@ import Login from "./pages/Login";
 import UpdateProfileAndPassword from "./pages/dashboard/UpdateProfile";
 import Category from "./pages/dashboard/Category";
 import { SidebarProvider } from "./context/SidebarContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function App() {
   return (
@@ -25,6 +28,7 @@ function App() {
             }
           />
         </Routes>
+        <ToastContainer />
       </Router>
     </SidebarProvider>
   );

@@ -3,8 +3,9 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../../assets/components/Sidebar";
 import Navbar from "../../assets/components/Navbar";
 import endpoints from "../../constants/apiEndpoint";
-import { toast } from "react-toastify";
 import Modal from "react-modal";
+Modal.setAppElement("#root");
+import showToast from "../../utils/showToast";
 import Pagination from "../../assets/components/partials/Pagination";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@mui/material";
@@ -22,7 +23,10 @@ import {
 const CategoryTable = () => {
   const [categories, setCategories] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [openModalDelete, setOpenModalDelete] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [showEntries, setShowEntries] = useState(5);
@@ -60,9 +64,9 @@ const CategoryTable = () => {
             if (!response.ok) {
               throw new Error("Failed to fetch user data");
             }
+            // eslint-disable-next-line no-unused-vars
           } catch (error) {
-            console.error("Error fetching user data:", error);
-            toast.error("Failed to fetch user data.");
+            showToast("Failed to fetch user data.", "error");
             navigate("/");
           }
         }
@@ -92,7 +96,15 @@ const CategoryTable = () => {
       const result = await response.json();
 
       if (result.success && Array.isArray(result.data.data)) {
-        setCategories(result.data.data);
+        let filteredCategories = result.data.data;
+
+        if (searchTerm) {
+          filteredCategories = filteredCategories.filter((category) =>
+            category.name.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        }
+
+        setCategories(filteredCategories);
         setTotalPages(result.data.meta.last_page || 1);
       } else {
         console.error("Data fetched is not an array:", result.data);
@@ -100,7 +112,7 @@ const CategoryTable = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error fetching categories.");
+      showToast("Error fetching categories.", "error");
     } finally {
       setLoading(false);
     }
@@ -110,6 +122,43 @@ const CategoryTable = () => {
     fetchCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, showEntries]);
+
+  const handleDeleteCategory = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(
+        `${endpoints.category}/${selectedCategory}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete category.");
+      }
+
+      showToast("Category deleted successfully.", "success");
+      setOpenModalDelete(false);
+      fetchCategories();
+      // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      showToast("Error deleting category.", "error");
+    }
+  };
+
+  const openModalActionDelete = (id) => {
+    setSelectedCategory(id);
+    setOpenModalDelete(true);
+  };
+
+  const closeModalDelete = () => {
+    setSelectedCategory(null);
+    setOpenModalDelete(false);
+  };
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -133,6 +182,10 @@ const CategoryTable = () => {
   const handleEntriesChange = (e) => {
     setShowEntries(Number(e.target.value));
     setCurrentPage(1);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
   return (
@@ -267,6 +320,8 @@ const CategoryTable = () => {
               <div className="w-full md:w-auto">
                 <input
                   type="text"
+                  value={searchTerm}
+                  onChange={handleSearchChange}
                   className="w-full md:w-auto border border-gray-300 rounded-lg px-3 py-1 focus:ring focus:ring-blue-200"
                   placeholder="Search"
                 />
@@ -388,7 +443,7 @@ const CategoryTable = () => {
                             onRequestClose={closeModal}
                             contentLabel="Action Modal"
                             className="bg-white p-4 rounded-md shadow-md w-[300px] mx-auto"
-                            overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+                            overlayClassName="fixed inset-0 bg-black bg-opacity-20 flex justify-center items-center"
                           >
                             <h2 className="text-lg mb-4">Choose Action</h2>
                             <div className="flex flex-col space-y-2">
@@ -421,11 +476,40 @@ const CategoryTable = () => {
                               Edit
                               <ModeEditOutlineRounded className="group-hover:text-white transition duration-300" />
                             </button>
-                            <button className="btn btn-sm btn-error text-white flex items-center justify-center px-2 py-1 group">
+                            <button
+                              className="btn btn-sm btn-error text-white flex items-center justify-center px-2 py-1 group"
+                              onClick={() => openModalActionDelete(category.id)}
+                            >
                               Delete
                               <DeleteOutlined className="group-hover:text-white transition duration-300" />
                             </button>
                           </div>
+                          <Modal
+                            isOpen={openModalDelete}
+                            onRequestClose={closeModalDelete}
+                            contentLabel="Delete Confirmation"
+                            ariaHideApp={false}
+                            className="relative bg-white p-6 rounded-lg shadow-lg max-w-sm mx-auto"
+                            overlayClassName="fixed inset-0 bg-black bg-opacity-[1%] flex justify-center items-center"
+                          >
+                            <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                              Are you sure you want to delete this category?
+                            </h2>
+                            <div className="flex justify-end space-x-3">
+                              <button
+                                onClick={handleDeleteCategory}
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
+                              >
+                                Yes, Delete
+                              </button>
+                              <button
+                                onClick={closeModalDelete}
+                                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition duration-200"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </Modal>
                         </td>
                       </tr>
                     ))}

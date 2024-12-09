@@ -3,8 +3,8 @@ import SideBar from "../../assets/components/Sidebar";
 import Navbar from "../../assets/components/Navbar";
 import endpoints from "../../constants/apiEndpoint";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import { Skeleton } from "@mui/material";
+import showToast from "../../utils/showToast";
 
 const UpdateProfileAndPassword = () => {
   const [images, setImages] = useState(null);
@@ -62,7 +62,7 @@ const UpdateProfileAndPassword = () => {
             }
           } catch (error) {
             console.error("Error fetching user data:", error);
-            toast.error("Failed to fetch user data.");
+            showToast("Failed to fetch user data.", "error");
             navigate("/");
           } finally {
             const endTime = Date.now();
@@ -167,30 +167,6 @@ const UpdateProfileAndPassword = () => {
       console.error("Error updating password:", error);
       showToast("Failed to update password!", "error");
     }
-  };
-
-  const showToast = (message, type) => {
-    const toast = document.createElement("div");
-    toast.className = `toast fixed top-4 right-4 z-50`;
-
-    let alertClass = "alert-primary";
-    let bgColor = "bg-primary";
-
-    if (type === "error") {
-      alertClass = "alert-error";
-      bgColor = "bg-red-500";
-    }
-
-    toast.innerHTML = `
-    <div class="alert ${alertClass} shadow-lg text-white ${bgColor} border-4 border-background">
-      <span>${message}</span>
-    </div>`;
-
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-      toast.remove();
-    }, 5000);
   };
 
   return (
