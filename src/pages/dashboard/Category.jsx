@@ -24,6 +24,7 @@ const CategoryTable = () => {
   const [categories, setCategories] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
@@ -33,6 +34,14 @@ const CategoryTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   // const [selectedAction] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -80,7 +89,7 @@ const CategoryTable = () => {
       setLoading(true);
       const token = localStorage.getItem("access_token");
       const response = await fetch(
-        `${endpoints.category}?page=${currentPage}&per_page=${showEntries}`,
+        `${endpoints.category}?page=${currentPage}&per_page=${showEntries}&searchTerm=${searchTerm}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -96,15 +105,7 @@ const CategoryTable = () => {
       const result = await response.json();
 
       if (result.success && Array.isArray(result.data.data)) {
-        let filteredCategories = result.data.data;
-
-        if (searchTerm) {
-          filteredCategories = filteredCategories.filter((category) =>
-            category.name.toLowerCase().includes(searchTerm.toLowerCase())
-          );
-        }
-
-        setCategories(filteredCategories);
+        setCategories(result.data.data);
         setTotalPages(result.data.meta.last_page || 1);
       } else {
         console.error("Data fetched is not an array:", result.data);
@@ -121,7 +122,7 @@ const CategoryTable = () => {
   useEffect(() => {
     fetchCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, showEntries]);
+  }, [currentPage, showEntries, debouncedSearchTerm]);
 
   const handleDeleteCategory = async () => {
     try {
@@ -141,12 +142,12 @@ const CategoryTable = () => {
         throw new Error("Failed to delete category.");
       }
 
-      showToast("Category deleted successfully.", "success");
+      showToast("Kategori berhasil dihapus!", "success");
       setOpenModalDelete(false);
       fetchCategories();
       // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      showToast("Error deleting category.", "error");
+      showToast("Kategori gagal dihapus!", "error");
     }
   };
 
@@ -318,13 +319,23 @@ const CategoryTable = () => {
               </div>
             ) : (
               <div className="w-full md:w-auto">
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                  className="w-full md:w-auto border border-gray-300 rounded-lg px-3 py-1 focus:ring focus:ring-blue-200"
-                  placeholder="Search"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="floating_outlined"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    className="block px-2.5 pb-2.5 pt-4 w-full md:w-auto text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                    placeholder=" "
+                    autoComplete="off"
+                  />
+                  <label
+                    htmlFor="floating_outlined"
+                    className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4"
+                  >
+                    Search
+                  </label>
+                </div>
               </div>
             )}
           </div>
