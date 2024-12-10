@@ -113,11 +113,59 @@ const CategoryAdd = () => {
                   className="w-full"
                   style={{ minHeight: "240px", backgroundColor: "#f0f0f0" }}
                 >
+                  <div className="form-group mb-6">
+                    <Skeleton
+                      variant="text"
+                      sx={{
+                        fontSize: "1rem",
+                        width: "40%",
+                        marginBottom: "0.5rem",
+                        backgroundColor: "#e0e0e0",
+                      }}
+                    />
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height={40}
+                      sx={{
+                        backgroundColor: "#e0e0e0",
+                        borderRadius: "4px",
+                        marginBottom: "1rem",
+                      }}
+                    />
+                  </div>
+
+                  <div className="form-group mb-6">
+                    <Skeleton
+                      variant="text"
+                      sx={{
+                        fontSize: "1rem",
+                        width: "40%",
+                        marginBottom: "0.5rem",
+                        backgroundColor: "#e0e0e0",
+                      }}
+                    />
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height={40}
+                      sx={{
+                        backgroundColor: "#e0e0e0",
+                        borderRadius: "4px",
+                        marginBottom: "1rem",
+                      }}
+                    />
+                  </div>
+
                   <Skeleton
                     variant="rectangular"
                     width="100%"
-                    height="100%"
-                    sx={{ backgroundColor: "#e0e0e0" }}
+                    height={48}
+                    sx={{
+                      backgroundColor: "#e0e0e0",
+                      borderRadius: "4px",
+                      marginTop: "20px",
+                    }}
                   />
                 </div>
               ) : (

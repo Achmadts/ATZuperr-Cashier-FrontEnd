@@ -171,7 +171,7 @@ const UpdateProfileAndPassword = () => {
       }
 
       showToast("Password Updated Successfully!", "success");
-    // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       showToast("Failed to update password!", "error");
     } finally {
@@ -193,8 +193,69 @@ const UpdateProfileAndPassword = () => {
                 Update Profile
               </h2>
               {loading ? (
-                <div style={{ minHeight: "450px" }}>
-                  <Skeleton variant="rectangular" width="100%" height="100%" />
+                <div style={{ minHeight: "450px", paddingTop: "20px" }}>
+                  <div className="flex justify-center mb-6">
+                    <Skeleton
+                      variant="circular"
+                      width={96}
+                      height={96}
+                      sx={{ backgroundColor: "#e0e0e0" }}
+                    />
+                  </div>
+
+                  <div className="form-group mb-6">
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height={48}
+                      sx={{ backgroundColor: "#f0f0f0", borderRadius: "4px" }}
+                    />
+                  </div>
+
+                  <div className="form-group mb-6">
+                    <Skeleton
+                      variant="text"
+                      sx={{
+                        fontSize: "1rem",
+                        width: "40%",
+                        marginBottom: "0.5rem",
+                      }}
+                    />
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height={48}
+                      sx={{ backgroundColor: "#f0f0f0", borderRadius: "4px" }}
+                    />
+                  </div>
+
+                  <div className="form-group mb-6">
+                    <Skeleton
+                      variant="text"
+                      sx={{
+                        fontSize: "1rem",
+                        width: "40%",
+                        marginBottom: "0.5rem",
+                      }}
+                    />
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height={48}
+                      sx={{ backgroundColor: "#f0f0f0", borderRadius: "4px" }}
+                    />
+                  </div>
+
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height={48}
+                    sx={{
+                      backgroundColor: "#e0e0e0",
+                      borderRadius: "4px",
+                      marginTop: "20px",
+                    }}
+                  />
                 </div>
               ) : (
                 <form onSubmit={handleProfileSubmit}>
@@ -274,8 +335,72 @@ const UpdateProfileAndPassword = () => {
                 Update Password
               </h2>
               {loading ? (
-                <div style={{ minHeight: "450px" }}>
-                  <Skeleton variant="rectangular" width="100%" height="100%" />
+                <div style={{ minHeight: "450px", paddingTop: "20px" }}>
+                  {/* Skeleton untuk input pertama */}
+                  <div className="form-group mb-6">
+                    <Skeleton
+                      variant="text"
+                      sx={{
+                        fontSize: "1rem",
+                        width: "40%",
+                        marginBottom: "0.5rem",
+                      }}
+                    />
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height={40}
+                      sx={{ backgroundColor: "#f0f0f0", borderRadius: "4px" }}
+                    />
+                  </div>
+
+                  {/* Skeleton untuk input kedua */}
+                  <div className="form-group mb-6">
+                    <Skeleton
+                      variant="text"
+                      sx={{
+                        fontSize: "1rem",
+                        width: "40%",
+                        marginBottom: "0.5rem",
+                      }}
+                    />
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height={40}
+                      sx={{ backgroundColor: "#f0f0f0", borderRadius: "4px" }}
+                    />
+                  </div>
+
+                  {/* Skeleton untuk input ketiga */}
+                  <div className="form-group mb-6">
+                    <Skeleton
+                      variant="text"
+                      sx={{
+                        fontSize: "1rem",
+                        width: "40%",
+                        marginBottom: "0.5rem",
+                      }}
+                    />
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height={40}
+                      sx={{ backgroundColor: "#f0f0f0", borderRadius: "4px" }}
+                    />
+                  </div>
+
+                  {/* Skeleton untuk tombol */}
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height={48}
+                    sx={{
+                      backgroundColor: "#e0e0e0",
+                      borderRadius: "4px",
+                      marginTop: "20px",
+                    }}
+                  />
                 </div>
               ) : (
                 <form onSubmit={handlePasswordSubmit}>
