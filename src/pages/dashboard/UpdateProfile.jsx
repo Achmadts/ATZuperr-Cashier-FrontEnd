@@ -10,6 +10,8 @@ const UpdateProfileAndPassword = () => {
   const [images, setImages] = useState(null);
   const [imagesFromDb, setImagesFromDb] = useState(null);
   const { id } = useParams();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmittingPW, setIsSubmittingPW] = useState(false);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("Loading...");
   const [email, setEmail] = useState("Loading...");
@@ -86,6 +88,7 @@ const UpdateProfileAndPassword = () => {
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     const token = localStorage.getItem("access_token");
 
     if (!name || name.trim() === "") {
@@ -117,20 +120,25 @@ const UpdateProfileAndPassword = () => {
 
       if (!response.ok) {
         showToast("Failed to update profile", "error");
+      } else {
+        showToast("Profile Updated Successfully!", "success");
       }
 
-      showToast("Profile Updated Successfully!", "success");
       // eslint-disable-next-line no-unused-vars
     } catch (error) {
       showToast("Data gagal diupdate!", "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmittingPW(true);
 
     if (newPassword !== confirmPassword) {
       showToast("Passwords do not match!", "error");
+      setIsSubmittingPW(false);
       return;
     }
 
@@ -163,9 +171,11 @@ const UpdateProfileAndPassword = () => {
       }
 
       showToast("Password Updated Successfully!", "success");
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      console.error("Error updating password:", error);
       showToast("Failed to update password!", "error");
+    } finally {
+      setIsSubmittingPW(false);
     }
   };
 
@@ -245,18 +255,19 @@ const UpdateProfileAndPassword = () => {
                       required
                     />
                   </div>
-
                   <button
                     type="submit"
-                    className="btn btn-primary w-full bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className={`btn btn-primary w-full bg-blue-600 text-white rounded disabled:bg-gray-400 disabled:text-gray-700 disabled:cursor-not-allowed ${
+                      isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                    disabled={isSubmitting}
                   >
-                    Update Profile <i className="ml-2 bi bi-check"></i>
+                    {isSubmitting ? "Memproses..." : "Update Profile"}
                   </button>
                 </form>
               )}
             </div>
           </div>
-
           <div className="card bg-white shadow-lg">
             <div className="card-body p-6">
               <h2 className="text-xl font-bold mb-4 text-gray-700">
@@ -291,6 +302,7 @@ const UpdateProfileAndPassword = () => {
                       onChange={(e) => setNewPassword(e.target.value)}
                       className="input input-bordered w-full border-gray-300 rounded"
                       required
+                      minLength={6}
                     />
                   </div>
 
@@ -304,14 +316,18 @@ const UpdateProfileAndPassword = () => {
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       className="input input-bordered w-full border-gray-300 rounded"
                       required
+                      minLength={6}
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="btn btn-primary w-full bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className={`btn btn-primary w-full bg-blue-600 text-white rounded disabled:bg-gray-400 disabled:text-gray-700 disabled:cursor-not-allowed ${
+                      isSubmittingPW ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
+                    disabled={isSubmittingPW}
                   >
-                    Update Password <i className="ml-2 bi bi-check"></i>
+                    {isSubmittingPW ? "Memproses..." : "Update Password"}
                   </button>
                 </form>
               )}
