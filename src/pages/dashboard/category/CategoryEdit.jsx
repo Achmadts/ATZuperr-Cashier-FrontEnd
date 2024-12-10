@@ -8,6 +8,7 @@ import showToast from "../../../utils/showToast";
 
 const CategoryEdit = () => {
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [categoryData, setCategoryData] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
@@ -68,6 +69,8 @@ const CategoryEdit = () => {
 
   const handleCategorySubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+
     const token = localStorage.getItem("access_token");
 
     if (
@@ -75,6 +78,7 @@ const CategoryEdit = () => {
       categoryData.nama_kategori.trim() === ""
     ) {
       showToast("Category name is required", "error");
+      setIsSubmitting(false);
       return;
     }
 
@@ -83,6 +87,7 @@ const CategoryEdit = () => {
       categoryData.kode_kategori.trim() === ""
     ) {
       showToast("Category code is required", "error");
+      setIsSubmitting(false);
       return;
     }
 
@@ -106,10 +111,11 @@ const CategoryEdit = () => {
         showToast("Category Updated Successfully!", "success");
         navigate("/dashboard/categories");
       }
-
       // eslint-disable-next-line no-unused-vars
     } catch (error) {
       showToast("Failed to update category!", "error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -175,10 +181,11 @@ const CategoryEdit = () => {
 
                   <button
                     type="submit"
-                    onSubmit={categoryData.id}
                     className="btn btn-primary w-full bg-blue-600 text-white rounded hover:bg-blue-700"
+                    disabled={isSubmitting}
                   >
-                    Update Category <i className="ml-2 bi bi-check"></i>
+                    {isSubmitting ? "Memproses..." : "Update Category"}{" "}
+                    <i className="ml-2 bi bi-check"></i>
                   </button>
                 </form>
               )}
