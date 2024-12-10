@@ -12,7 +12,6 @@ import { Skeleton } from "@mui/material";
 
 import {
   DescriptionOutlined,
-  Print,
   Replay,
   ModeEditOutlineRounded,
   DeleteOutlined,
@@ -151,6 +150,40 @@ const CategoryTable = () => {
     }
   };
 
+  const handleDownloadExcel = async () => {
+    const token = localStorage.getItem("access_token"); // Pastikan token ada di localStorage
+    if (!token) {
+      alert("Anda belum login! Silakan login terlebih dahulu.");
+      return;
+    }
+
+    try {
+      const response = await fetch(endpoints.categoryExport, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          "Failed to download file. Please check your authentication."
+        );
+      }
+
+      const blob = await response.blob(); // Mendapatkan data file sebagai blob
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "categories.xlsx"; // Nama file saat diunduh
+      link.click();
+      window.URL.revokeObjectURL(url); // Hapus URL setelah selesai
+    } catch (error) {
+      console.error("Error downloading file:", error);
+      alert("Gagal mengunduh file. Silakan coba lagi.");
+    }
+  };
+
   const openModalActionDelete = (id) => {
     setSelectedCategory(id);
     setOpenModalDelete(true);
@@ -214,12 +247,6 @@ const CategoryTable = () => {
                     />
                     <Skeleton
                       variant="rectangular"
-                      width={100}
-                      height={40}
-                      className="flex items-center px-2 py-2 bg-gray-200 text-gray-800 rounded-lg shadow"
-                    />
-                    <Skeleton
-                      variant="rectangular"
                       width={112}
                       height={40}
                       className="flex items-center px-2 py-2 bg-gray-200 text-gray-800 rounded-lg shadow"
@@ -249,13 +276,12 @@ const CategoryTable = () => {
                 </button>
                 <div className="flex space-x-2">
                   <div className="hidden md:flex space-x-2">
-                    <button className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
+                    <button
+                      className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300"
+                      onClick={handleDownloadExcel}
+                    >
                       <DescriptionOutlined className="mr-2" />
                       Excel
-                    </button>
-                    <button className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300">
-                      <Print className="mr-2" />
-                      Print
                     </button>
                     <button
                       className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300"
@@ -279,11 +305,11 @@ const CategoryTable = () => {
                     </button>
                     {openDropdown === "mobile" && (
                       <div className="absolute right-0 mt-2 bg-white border border-gray-300 rounded shadow-lg w-[150px] z-50">
-                        <button className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left">
+                        <button
+                          className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left"
+                          onClick={handleDownloadExcel}
+                        >
                           Excel
-                        </button>
-                        <button className="block w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left">
-                          Print
                         </button>
                         <button
                           onClick={handleReload}

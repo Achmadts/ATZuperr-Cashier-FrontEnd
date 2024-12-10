@@ -8,6 +8,7 @@ const endpoints = {
     dashboard: `${API_BASE_URL}/dashboard`,
     updateProfile: `${API_BASE_URL}/users`,
     category: `${API_BASE_URL}/kategori`,
+    categoryExport: `${API_BASE_URL}/kategori-export`,
 };
 
 export default endpoints;
