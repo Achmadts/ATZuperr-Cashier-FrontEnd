@@ -253,6 +253,11 @@ const SideBar = () => {
                 >
                   <MenuItem
                     icon={<CategoryOutlined />}
+                    style={{
+                      color: location.pathname.includes("/dashboard/categories")
+                        ? "#868dfb"
+                        : undefined,
+                    }}
                     onClick={() => navigate("/dashboard/categories")}
                   >
                     Categories

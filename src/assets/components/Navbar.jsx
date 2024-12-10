@@ -22,6 +22,10 @@ const Navbar = () => {
         return "Products";
       case "/dashboard/categories":
         return "Categories";
+      case `/dashboard/categories/edit/${id}`:
+        return "Edit Category";
+      case `/dashboard/categories/add`:
+        return "Add Category";
       case "/dashboard/sales":
         return "Sales";
       default:

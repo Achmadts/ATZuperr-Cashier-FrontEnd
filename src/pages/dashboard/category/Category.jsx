@@ -239,7 +239,12 @@ const CategoryTable = () => {
           ) : (
             <>
               <div className="flex justify-between items-center mb-4">
-                <button className="btn btn-primary text-white">
+                <button
+                  className="btn btn-primary text-white"
+                  onClick={() => {
+                    navigate("add");
+                  }}
+                >
                   Add Category +
                 </button>
                 <div className="flex space-x-2">
@@ -467,6 +472,7 @@ const CategoryTable = () => {
                               <button
                                 className="btn btn-primary"
                                 onClick={() => {
+                                  navigate(`edit/${category.id}`);
                                   closeModal();
                                 }}
                               >
@@ -490,7 +496,10 @@ const CategoryTable = () => {
                             </div>
                           </Modal>
                           <div className="hidden md:flex space-x-1 justify-center items-center">
-                            <button className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group">
+                            <button
+                              className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group"
+                              onClick={() => navigate(`edit/${category.id}`)}
+                            >
                               Edit
                               <ModeEditOutlineRounded className="group-hover:text-white transition duration-300" />
                             </button>
