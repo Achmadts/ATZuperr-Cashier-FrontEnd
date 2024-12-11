@@ -151,7 +151,7 @@ const CategoryTable = () => {
   };
 
   const handleDownloadExcel = async () => {
-    const token = localStorage.getItem("access_token"); // Pastikan token ada di localStorage
+    const token = localStorage.getItem("access_token");
     if (!token) {
       alert("Anda belum login! Silakan login terlebih dahulu.");
       return;
@@ -171,13 +171,13 @@ const CategoryTable = () => {
         );
       }
 
-      const blob = await response.blob(); // Mendapatkan data file sebagai blob
+      const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "categories.xlsx"; // Nama file saat diunduh
+      link.download = "categories.xlsx";
       link.click();
-      window.URL.revokeObjectURL(url); // Hapus URL setelah selesai
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading file:", error);
       alert("Gagal mengunduh file. Silakan coba lagi.");
