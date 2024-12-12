@@ -9,6 +9,8 @@ const endpoints = {
     updateProfile: `${API_BASE_URL}/users`,
     category: `${API_BASE_URL}/kategori`,
     categoryExport: `${API_BASE_URL}/kategori-export`,
+    product: `${API_BASE_URL}/produk`,
+    productExport: `${API_BASE_URL}/produk-export`,
 };
 
 export default endpoints;

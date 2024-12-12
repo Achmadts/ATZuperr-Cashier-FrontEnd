@@ -12,6 +12,10 @@ import Category from "./pages/dashboard/category/Category";
 import CategoryEdit from "./pages/dashboard/category/CategoryEdit";
 import CategoryAdd from "./pages/dashboard/category/CategoryAdd";
 
+import Product from "./pages/dashboard/product/Product";
+import ProductEdit from "./pages/dashboard/product/ProductEdit";
+// import ProductAdd from "./pages/dashboard/product/ProductAdd";
+
 
 function App() {
   return (
@@ -27,6 +31,10 @@ function App() {
                 <Route path="categories" element={<Category />} />
                 <Route path="categories/edit/:id" element={<CategoryEdit />} />
                 <Route path="categories/add" element={<CategoryAdd />} />
+
+                <Route path="products" element={<Product />} />
+                <Route path="products/edit/:id" element={<ProductEdit />} />
+                {/* <Route path="products/add" element={<ProductAdd />} /> */}
                 <Route
                   path="profile-password/:id"
                   element={<UpdateProfileAndPassword />}

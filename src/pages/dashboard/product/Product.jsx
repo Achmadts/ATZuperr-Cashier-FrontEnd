@@ -19,12 +19,12 @@ import {
   ArrowDropUpOutlined,
 } from "@mui/icons-material";
 
-const CategoryTable = () => {
-  const [categories, setCategories] = useState([]);
+const ProductTable = () => {
+  const [products, setProducts] = useState([]);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -83,12 +83,12 @@ const CategoryTable = () => {
     }
   }, [navigate, currentPage, showEntries]);
 
-  const fetchCategories = async () => {
+  const fetchProducts = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("access_token");
       const response = await fetch(
-        `${endpoints.category}?page=${currentPage}&per_page=${showEntries}&searchTerm=${searchTerm}`,
+        `${endpoints.product}?page=${currentPage}&per_page=${showEntries}&searchTerm=${searchTerm}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -98,55 +98,52 @@ const CategoryTable = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch categories.");
+        throw new Error("Failed to fetch products.");
       }
 
       const result = await response.json();
 
       if (result.success && Array.isArray(result.data.data)) {
-        setCategories(result.data.data);
+        setProducts(result.data.data);
         setTotalPages(result.data.meta.last_page || 1);
       } else {
         console.error("Data fetched is not an array:", result.data);
-        setCategories([]);
+        setProducts([]);
       }
     } catch (error) {
       console.error(error);
-      showToast("Gagal mengambil data Kategori.", "error");
+      showToast("Gagal mengambil data Produk.", "error");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchCategories();
+    fetchProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, showEntries, debouncedSearchTerm]);
 
-  const handleDeleteCategory = async () => {
+  const handleDeleteProduct = async () => {
     try {
       const token = localStorage.getItem("access_token");
-      const response = await fetch(
-        `${endpoints.category}/${selectedCategory}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${endpoints.product}/${selectedProduct}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to delete category.");
+        throw new Error("Failed to delete product.");
       }
 
-      showToast("Kategori berhasil dihapus!", "success");
+      showToast("Product berhasil dihapus!", "success");
       setOpenModalDelete(false);
-      fetchCategories();
+      fetchProducts();
       // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      showToast("Kategori gagal dihapus!", "error");
+      showToast("Product gagal dihapus!", "error");
     }
   };
 
@@ -158,7 +155,7 @@ const CategoryTable = () => {
     }
 
     try {
-      const response = await fetch(endpoints.categoryExport, {
+      const response = await fetch(endpoints.productExport, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -175,7 +172,7 @@ const CategoryTable = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "categories.xlsx";
+      link.download = "products.xlsx";
       link.click();
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -185,12 +182,12 @@ const CategoryTable = () => {
   };
 
   const openModalActionDelete = (id) => {
-    setSelectedCategory(id);
+    setSelectedProduct(id);
     setOpenModalDelete(true);
   };
 
   const closeModalDelete = () => {
-    setSelectedCategory(null);
+    setSelectedProduct(null);
     setOpenModalDelete(false);
   };
 
@@ -202,7 +199,7 @@ const CategoryTable = () => {
 
   const handleReload = () => {
     setLoading(true);
-    fetchCategories();
+    fetchProducts();
   };
 
   const toggleDropdown = (id) => {
@@ -272,7 +269,7 @@ const CategoryTable = () => {
                     navigate("add");
                   }}
                 >
-                  Add Category +
+                  Add Product +
                 </button>
                 <div className="flex space-x-2">
                   <div className="hidden md:flex space-x-2">
@@ -422,13 +419,13 @@ const CategoryTable = () => {
                         className="border border-gray-300 px-4 py-2"
                         style={{ width: "33.33%" }}
                       >
-                        Category Code
+                        Product Name
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
                         style={{ width: "33.33%" }}
                       >
-                        Category Name
+                        Harga
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
@@ -466,20 +463,26 @@ const CategoryTable = () => {
                         </td>
                       </tr>
                     ))
-                  : categories.map((category) => (
-                      <tr key={category.id}>
+                  : products.map((product, index) => (
+                      <tr
+                        key={
+                          product.id
+                            ? `product-${product.id}`
+                            : `product-${index}`
+                        }
+                      >
                         <td className="border border-gray-300 px-4 py-2">
-                          {category.kode_kategori}
+                          {product.nama_produk}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
-                          {category.nama_kategori}
+                          {product.harga}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           <div className="md:hidden">
                             <button
                               className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1"
                               onClick={() => {
-                                setSelectedCategory(category.id);
+                                setSelectedProduct(product.id);
                                 setOpenModal(true);
                               }}
                             >
@@ -498,7 +501,8 @@ const CategoryTable = () => {
                               <button
                                 className="btn btn-primary"
                                 onClick={() => {
-                                  navigate(`edit/${category.id}`);
+                                  navigate(`edit/${product.id}`);
+                                  console.log("ID: " + product.id);
                                   closeModal();
                                 }}
                               >
@@ -507,7 +511,7 @@ const CategoryTable = () => {
                               <button
                                 className="btn btn-error"
                                 onClick={() => {
-                                  handleDeleteCategory(category.id);
+                                  handleDeleteProduct(product.id);
                                   closeModal();
                                 }}
                               >
@@ -524,14 +528,14 @@ const CategoryTable = () => {
                           <div className="hidden md:flex space-x-1 justify-center items-center">
                             <button
                               className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group"
-                              onClick={() => navigate(`edit/${category.id}`)}
+                              onClick={() => navigate(`edit/${product.id}`)}
                             >
                               Edit
                               <ModeEditOutlineRounded className="group-hover:text-white transition duration-300" />
                             </button>
                             <button
                               className="btn btn-sm btn-error text-white flex items-center justify-center px-2 py-1 group"
-                              onClick={() => openModalActionDelete(category.id)}
+                              onClick={() => openModalActionDelete(product.id)}
                             >
                               Delete
                               <DeleteOutlined className="group-hover:text-white transition duration-300" />
@@ -546,11 +550,11 @@ const CategoryTable = () => {
                             overlayClassName="fixed inset-0 bg-black bg-opacity-[1%] flex justify-center items-center"
                           >
                             <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                              Are you sure you want to delete this category?
+                              Are you sure you want to delete this product?
                             </h2>
                             <div className="flex justify-end space-x-3">
                               <button
-                                onClick={handleDeleteCategory}
+                                onClick={handleDeleteProduct}
                                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
                               >
                                 Yes, Delete
@@ -576,7 +580,7 @@ const CategoryTable = () => {
           />
         </div>
         <footer className="mt-8 text-center text-sm text-gray-500">
-          ATZuperrr Cashier © 2024 || Developed by{" "}
+          ATZuperrr Cashier © 2024 || Developed by
           <a href="#" className="text-blue-500 hover:underline">
             Achmad Tirto Sudiro
           </a>
@@ -586,4 +590,4 @@ const CategoryTable = () => {
   );
 };
 
-export default CategoryTable;
+export default ProductTable;
