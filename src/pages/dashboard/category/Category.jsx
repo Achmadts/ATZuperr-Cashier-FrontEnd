@@ -123,29 +123,25 @@ const CategoryTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, showEntries, debouncedSearchTerm]);
 
-  const handleDeleteCategory = async () => {
+  const handleDeleteCategory = async (id) => {
     try {
       const token = localStorage.getItem("access_token");
-      const response = await fetch(
-        `${endpoints.category}/${selectedCategory}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${endpoints.category}/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to delete category.");
+        throw new Error("Gagal menghapus kategori.");
       }
 
-      showToast("Kategori berhasil dihapus!", "success");
-      setOpenModalDelete(false);
+      showToast("Kategori berhasil dihapus", "success");
       fetchCategories();
-      // eslint-disable-next-line no-unused-vars
     } catch (error) {
+      console.error(error);
       showToast("Kategori gagal dihapus!", "error");
     }
   };
@@ -220,6 +216,11 @@ const CategoryTable = () => {
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const openModalWithCategory = (category) => {
+    setSelectedCategory(category);
+    setOpenModal(true);
   };
 
   return (
@@ -478,10 +479,7 @@ const CategoryTable = () => {
                           <div className="md:hidden">
                             <button
                               className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1"
-                              onClick={() => {
-                                setSelectedCategory(category.id);
-                                setOpenModal(true);
-                              }}
+                              onClick={() => openModalWithCategory(category)}
                             >
                               Actions
                             </button>
@@ -498,8 +496,11 @@ const CategoryTable = () => {
                               <button
                                 className="btn btn-primary"
                                 onClick={() => {
-                                  navigate(`edit/${category.id}`);
-                                  closeModal();
+                                  if (selectedCategory) {
+                                    navigate(`edit/${selectedCategory.id}`);
+                                    console.log("ID: " + selectedCategory.id);
+                                  }
+                                  closeModal(true);
                                 }}
                               >
                                 Edit
@@ -507,15 +508,22 @@ const CategoryTable = () => {
                               <button
                                 className="btn btn-error"
                                 onClick={() => {
-                                  handleDeleteCategory(category.id);
-                                  closeModal();
+                                  if (selectedCategory && selectedCategory.id) {
+                                    handleDeleteCategory(selectedCategory.id);
+                                  } else {
+                                    showToast(
+                                      "Gagal menghapus. Kategori tidak valid.",
+                                      "error"
+                                    );
+                                  }
+                                  closeModal(true);
                                 }}
                               >
                                 Delete
                               </button>
                               <button
                                 className="btn btn-accent mt-4"
-                                onClick={closeModal}
+                                onClick={() => closeModal(true)}
                               >
                                 Cancel
                               </button>
@@ -550,13 +558,18 @@ const CategoryTable = () => {
                             </h2>
                             <div className="flex justify-end space-x-3">
                               <button
-                                onClick={handleDeleteCategory}
+                                onClick={() => {
+                                  if (selectedCategory) {
+                                    handleDeleteCategory(selectedCategory);
+                                  }
+                                  closeModalDelete(true);
+                                }}
                                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
                               >
                                 Yes, Delete
                               </button>
                               <button
-                                onClick={closeModalDelete}
+                                onClick={() => closeModalDelete(true)}
                                 className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition duration-200"
                               >
                                 Cancel
