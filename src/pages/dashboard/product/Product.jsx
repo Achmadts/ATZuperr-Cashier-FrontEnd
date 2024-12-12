@@ -123,10 +123,10 @@ const ProductTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, showEntries, debouncedSearchTerm]);
 
-  const handleDeleteProduct = async () => {
+  const handleDeleteProduct = async (id) => {
     try {
       const token = localStorage.getItem("access_token");
-      const response = await fetch(`${endpoints.product}/${selectedProduct}`, {
+      const response = await fetch(`${endpoints.product}/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -135,15 +135,14 @@ const ProductTable = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to delete product.");
+        throw new Error("Gagal menghapus produk.");
       }
 
-      showToast("Product berhasil dihapus!", "success");
-      setOpenModalDelete(false);
+      showToast("Produk berhasil dihapus.", "success");
       fetchProducts();
-      // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      showToast("Product gagal dihapus!", "error");
+      console.error(error);
+      showToast("Terjadi kesalahan saat menghapus produk.", "error");
     }
   };
 
@@ -217,6 +216,11 @@ const ProductTable = () => {
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const openModalWithProduct = (product) => {
+    setSelectedProduct(product);
+    setOpenModal(true);
   };
 
   return (
@@ -481,10 +485,7 @@ const ProductTable = () => {
                           <div className="md:hidden">
                             <button
                               className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1"
-                              onClick={() => {
-                                setSelectedProduct(product.id);
-                                setOpenModal(true);
-                              }}
+                              onClick={() => openModalWithProduct(product)}
                             >
                               Actions
                             </button>
@@ -501,9 +502,11 @@ const ProductTable = () => {
                               <button
                                 className="btn btn-primary"
                                 onClick={() => {
-                                  navigate(`edit/${product.id}`);
-                                  console.log("ID: " + product.id);
-                                  closeModal();
+                                  if (selectedProduct) {
+                                    navigate(`edit/${selectedProduct.id}`);
+                                    console.log("ID: " + selectedProduct.id);
+                                  }
+                                  closeModal(true);
                                 }}
                               >
                                 Edit
@@ -511,15 +514,22 @@ const ProductTable = () => {
                               <button
                                 className="btn btn-error"
                                 onClick={() => {
-                                  handleDeleteProduct(product.id);
-                                  closeModal();
+                                  if (selectedProduct && selectedProduct.id) {
+                                    handleDeleteProduct(selectedProduct.id);
+                                  } else {
+                                    showToast(
+                                      "Gagal menghapus. Produk tidak valid.",
+                                      "error"
+                                    );
+                                  }
+                                  closeModal(true);
                                 }}
                               >
                                 Delete
                               </button>
                               <button
                                 className="btn btn-accent mt-4"
-                                onClick={closeModal}
+                                onClick={() => closeModal(true)}
                               >
                                 Cancel
                               </button>
@@ -554,14 +564,19 @@ const ProductTable = () => {
                             </h2>
                             <div className="flex justify-end space-x-3">
                               <button
-                                onClick={handleDeleteProduct}
                                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
+                                onClick={() => {
+                                  if (selectedProduct) {
+                                    handleDeleteProduct(selectedProduct);
+                                  }
+                                  closeModalDelete(true);
+                                }}
                               >
                                 Yes, Delete
                               </button>
                               <button
-                                onClick={closeModalDelete}
                                 className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition duration-200"
+                                onClick={() => closeModalDelete(true)}
                               >
                                 Cancel
                               </button>
