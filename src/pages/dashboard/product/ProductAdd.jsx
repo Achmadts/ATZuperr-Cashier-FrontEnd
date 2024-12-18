@@ -108,7 +108,7 @@ function CreateProduct() {
       !formData.harga_beli ||
       !formData.harga_jual ||
       !formData.stok ||
-      !formData.image 
+      !formData.image
     ) {
       showToast("Please fill in all required fields. (*)", "error");
       return;

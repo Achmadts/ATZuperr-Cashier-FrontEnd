@@ -33,7 +33,9 @@ import {
   ExpandLessOutlined,
   CategoryOutlined,
   AddCircleOutlined,
+  AddCircleOutlineOutlined,
   QrCode2Outlined,
+  UnfoldMoreDoubleOutlined,
 } from "@mui/icons-material";
 import { useSidebar } from "../../context/SidebarContext";
 import logo from "../../assets/images/logo.png";
@@ -229,12 +231,14 @@ const SideBar = () => {
                 Dashboard
               </MenuItem>
               <MenuItem
-                icon={<Inventory2Outlined />}
+                icon={<UnfoldMoreDoubleOutlined />}
                 onClick={() => handleExpandClick("products")}
                 style={{
-                  color: location.pathname.includes("/dashboard/products")
-                    ? "#868dfb"
-                    : undefined,
+                  color:
+                    location.pathname.includes("/dashboard/products") ||
+                    location.pathname.includes("/dashboard/categories")
+                      ? "#868dfb"
+                      : undefined,
                 }}
                 suffix={
                   expandedMenu === "products" ? (
@@ -244,7 +248,7 @@ const SideBar = () => {
                   )
                 }
               >
-                Products
+                More Action
               </MenuItem>
               <Collapse in={expandedMenu === "products"}>
                 <Box
@@ -252,9 +256,20 @@ const SideBar = () => {
                   className="max-h-[300px] overflow-y-auto scrollbar-hide"
                 >
                   <MenuItem
+                    icon={<AddCircleOutlineOutlined />}
+                    style={{
+                      color: location.pathname === "/dashboard/categories/add"
+                        ? "#868dfb"
+                        : undefined,
+                    }}
+                    onClick={() => navigate("/dashboard/categories/add")}
+                  >
+                    Create Categories
+                  </MenuItem>
+                  <MenuItem
                     icon={<CategoryOutlined />}
                     style={{
-                      color: location.pathname.includes("/dashboard/categories")
+                      color: location.pathname === "/dashboard/categories"
                         ? "#868dfb"
                         : undefined,
                     }}
@@ -277,6 +292,12 @@ const SideBar = () => {
                   </MenuItem>
                   <MenuItem
                     icon={<Inventory2Outlined />}
+                    style={{
+                      color:
+                        location.pathname === "/dashboard/products"
+                          ? "#868dfb"
+                          : undefined,
+                    }}
                     onClick={() => navigate("/dashboard/products")}
                   >
                     All Products
