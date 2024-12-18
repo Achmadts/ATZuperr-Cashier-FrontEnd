@@ -7,8 +7,12 @@ const endpoints = {
     user: `${API_BASE_URL}/user`,
     dashboard: `${API_BASE_URL}/dashboard`,
     updateProfile: `${API_BASE_URL}/users`,
+
+    // Kategori
     category: `${API_BASE_URL}/kategori`,
     categoryExport: `${API_BASE_URL}/kategori-export`,
+
+    // Produk
     product: `${API_BASE_URL}/produk`,
     productExport: `${API_BASE_URL}/produk-export`,
 };

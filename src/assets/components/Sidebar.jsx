@@ -264,7 +264,14 @@ const SideBar = () => {
                   </MenuItem>
                   <MenuItem
                     icon={<AddCircleOutlined />}
-                    onClick={() => navigate("/dashboard/product/create")}
+                    style={{
+                      color: location.pathname.includes(
+                        "/dashboard/products/add"
+                      )
+                        ? "#868dfb"
+                        : undefined,
+                    }}
+                    onClick={() => navigate("/dashboard/products/add")}
                   >
                     Create Product
                   </MenuItem>
