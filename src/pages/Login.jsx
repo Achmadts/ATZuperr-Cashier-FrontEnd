@@ -200,7 +200,9 @@ const LoginPage = () => {
 
         <p className="text-center text-gray-500 text-sm mt-6">
           Developed By{" "}
-          <span className="text-blue-600 font-bold">Achmad Tirto Sudiro</span>
+          <span className="text-blue-600 font-bold">
+            <a href="http://github.com/achmadts">Achmad Tirto Sudiro</a>
+          </span>
         </p>
       </div>
     </div>
