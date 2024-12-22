@@ -5,6 +5,7 @@ import endpoints from "../../constants/apiEndpoint";
 import { useNavigate, useParams } from "react-router-dom";
 import { Skeleton } from "@mui/material";
 import showToast from "../../utils/showToast";
+import { VisibilityOutlined, VisibilityOffOutlined } from "@mui/icons-material";
 
 const UpdateProfileAndPassword = () => {
   const [images, setImages] = useState(null);
@@ -19,6 +20,11 @@ const UpdateProfileAndPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  });
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -179,6 +185,12 @@ const UpdateProfileAndPassword = () => {
     }
   };
 
+  const togglePasswordVisibility = (field) => {
+    setShowPassword((prevState) => ({
+      ...prevState,
+      [field]: !prevState[field],
+    }));
+  };
   return (
     <div className="flex bg-gray-100">
       <SideBar />
@@ -336,7 +348,6 @@ const UpdateProfileAndPassword = () => {
               </h2>
               {loading ? (
                 <div style={{ minHeight: "450px", paddingTop: "20px" }}>
-                  {/* Skeleton untuk input pertama */}
                   <div className="form-group mb-6">
                     <Skeleton
                       variant="text"
@@ -354,7 +365,6 @@ const UpdateProfileAndPassword = () => {
                     />
                   </div>
 
-                  {/* Skeleton untuk input kedua */}
                   <div className="form-group mb-6">
                     <Skeleton
                       variant="text"
@@ -372,7 +382,6 @@ const UpdateProfileAndPassword = () => {
                     />
                   </div>
 
-                  {/* Skeleton untuk input ketiga */}
                   <div className="form-group mb-6">
                     <Skeleton
                       variant="text"
@@ -390,7 +399,6 @@ const UpdateProfileAndPassword = () => {
                     />
                   </div>
 
-                  {/* Skeleton untuk tombol */}
                   <Skeleton
                     variant="rectangular"
                     width="100%"
@@ -408,41 +416,77 @@ const UpdateProfileAndPassword = () => {
                     <label className="block text-gray-600 mb-2">
                       Current Password <span className="text-red-600">*</span>
                     </label>
-                    <input
-                      type="password"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                      className="input input-bordered w-full border-gray-300 rounded"
-                      required
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPassword.current ? "text" : "password"}
+                        value={currentPassword}
+                        onChange={(e) => setCurrentPassword(e.target.value)}
+                        className="input input-bordered w-full border-gray-300 rounded"
+                        required
+                      />
+                      <span
+                        onClick={() => togglePasswordVisibility("current")}
+                        className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                      >
+                        {showPassword.current ? (
+                          <VisibilityOutlined />
+                        ) : (
+                          <VisibilityOffOutlined />
+                        )}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="form-group mb-4">
                     <label className="block text-gray-600 mb-2">
                       New Password <span className="text-red-600">*</span>
                     </label>
-                    <input
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className="input input-bordered w-full border-gray-300 rounded"
-                      required
-                      minLength={6}
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPassword.new ? "text" : "password"}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="input input-bordered w-full border-gray-300 rounded"
+                        required
+                        minLength={6}
+                      />
+                      <span
+                        onClick={() => togglePasswordVisibility("new")}
+                        className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                      >
+                        {showPassword.new ? (
+                          <VisibilityOutlined />
+                        ) : (
+                          <VisibilityOffOutlined />
+                        )}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="form-group mb-4">
                     <label className="block text-gray-600 mb-2">
                       Confirm Password <span className="text-red-600">*</span>
                     </label>
-                    <input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="input input-bordered w-full border-gray-300 rounded"
-                      required
-                      minLength={6}
-                    />
+                    <div className="relative">
+                      <input
+                        type={showPassword.confirm ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className="input input-bordered w-full border-gray-300 rounded"
+                        required
+                        minLength={6}
+                      />
+                      <span
+                        onClick={() => togglePasswordVisibility("confirm")}
+                        className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                      >
+                        {showPassword.confirm ? (
+                          <VisibilityOutlined />
+                        ) : (
+                          <VisibilityOffOutlined />
+                        )}
+                      </span>
+                    </div>
                   </div>
 
                   <button
