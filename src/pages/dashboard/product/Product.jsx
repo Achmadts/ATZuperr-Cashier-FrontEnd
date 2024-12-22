@@ -382,7 +382,7 @@ const ProductTable = () => {
                     <>
                       <th
                         className="border border-gray-300 px-4 py-2 text-center"
-                        style={{ width: "33.33%" }}
+                        style={{ width: "16.66%" }}
                       >
                         <div className="flex justify-center">
                           <Skeleton
@@ -394,7 +394,7 @@ const ProductTable = () => {
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2 text-center"
-                        style={{ width: "33.33%" }}
+                        style={{ width: "16.66%" }}
                       >
                         <div className="flex justify-center">
                           <Skeleton
@@ -406,7 +406,43 @@ const ProductTable = () => {
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2 text-center"
-                        style={{ width: "33.33%" }}
+                        style={{ width: "16.66%" }}
+                      >
+                        <div className="flex justify-center">
+                          <Skeleton
+                            variant="rectangular"
+                            width="20%"
+                            height={20}
+                          />
+                        </div>
+                      </th>
+                      <th
+                        className="border border-gray-300 px-4 py-2 text-center"
+                        style={{ width: "16.66%" }}
+                      >
+                        <div className="flex justify-center">
+                          <Skeleton
+                            variant="rectangular"
+                            width="20%"
+                            height={20}
+                          />
+                        </div>
+                      </th>
+                      <th
+                        className="border border-gray-300 px-4 py-2 text-center"
+                        style={{ width: "16.66%" }}
+                      >
+                        <div className="flex justify-center">
+                          <Skeleton
+                            variant="rectangular"
+                            width="20%"
+                            height={20}
+                          />
+                        </div>
+                      </th>
+                      <th
+                        className="border border-gray-300 px-4 py-2 text-center"
+                        style={{ width: "16.66%" }}
                       >
                         <div className="flex justify-center">
                           <Skeleton
@@ -421,19 +457,37 @@ const ProductTable = () => {
                     <>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "33.33%" }}
+                        style={{ width: "16.66%" }}
+                      >
+                        Product Code
+                      </th>
+                      <th
+                        className="border border-gray-300 px-4 py-2"
+                        style={{ width: "16.66%" }}
                       >
                         Product Name
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "33.33%" }}
+                        style={{ width: "16.66%" }}
                       >
-                        Harga
+                        Cost
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "33.33%" }}
+                        style={{ width: "16.66%" }}
+                      >
+                        Price
+                      </th>
+                      <th
+                        className="border border-gray-300 px-4 py-2"
+                        style={{ width: "16.66%" }}
+                      >
+                        Stock
+                      </th>
+                      <th
+                        className="border border-gray-300 px-4 py-2"
+                        style={{ width: "16.66%" }}
                       >
                         Action
                       </th>
@@ -445,6 +499,15 @@ const ProductTable = () => {
                 {loading
                   ? Array.from({ length: 5 }).map((_, index) => (
                       <tr key={index}>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <Skeleton variant="text" width="80%" />
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <Skeleton variant="text" width="80%" />
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <Skeleton variant="text" width="80%" />
+                        </td>
                         <td className="border border-gray-300 px-4 py-2">
                           <Skeleton variant="text" width="80%" />
                         </td>
@@ -476,10 +539,19 @@ const ProductTable = () => {
                         }
                       >
                         <td className="border border-gray-300 px-4 py-2">
+                          {product.kode_produk}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
                           {product.nama_produk}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
-                          {product.harga}
+                          {product.harga_beli}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {product.harga_jual}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {product.stok}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           <div className="md:hidden">
