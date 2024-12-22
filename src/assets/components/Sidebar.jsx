@@ -258,9 +258,10 @@ const SideBar = () => {
                   <MenuItem
                     icon={<AddCircleOutlineOutlined />}
                     style={{
-                      color: location.pathname === "/dashboard/categories/add"
-                        ? "#868dfb"
-                        : undefined,
+                      color:
+                        location.pathname === "/dashboard/categories/add"
+                          ? "#868dfb"
+                          : undefined,
                     }}
                     onClick={() => navigate("/dashboard/categories/add")}
                   >
@@ -269,9 +270,10 @@ const SideBar = () => {
                   <MenuItem
                     icon={<CategoryOutlined />}
                     style={{
-                      color: location.pathname === "/dashboard/categories"
-                        ? "#868dfb"
-                        : undefined,
+                      color:
+                        location.pathname === "/dashboard/categories"
+                          ? "#868dfb"
+                          : undefined,
                     }}
                     onClick={() => navigate("/dashboard/categories")}
                   >
@@ -318,7 +320,7 @@ const SideBar = () => {
               </MenuItem>
               <MenuItem
                 icon={<PersonOutlined />}
-                onClick={() => navigate("/sales")}
+                onClick={() => navigate("/dashboard/sales")}
               >
                 Sales
               </MenuItem>

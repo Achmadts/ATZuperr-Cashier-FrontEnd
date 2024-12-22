@@ -34,8 +34,9 @@ const Navbar = () => {
         return "Edit Category";
       case `/dashboard/categories/add`:
         return "Add Category";
-      case "/dashboard/sales":
-        return "Sales";
+      
+      case "/dashboard/sales/add":
+        return "Add Sales";
       default:
         return "Dashboard";
     }
