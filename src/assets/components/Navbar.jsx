@@ -18,10 +18,16 @@ const Navbar = () => {
         return "Dashboard";
       case `/dashboard/profile-password/${id}`:
         return "Update Profile & Password";
+      
       case "/dashboard/products":
         return "Products";
       case "/dashboard/products/add":
         return "Add Products";
+      case `/dashboard/products/edit/${id}`:
+        return "Edit Products";
+      case `/dashboard/products/details/${id}`:
+        return "Details Products";
+      
       case "/dashboard/categories":
         return "Categories";
       case `/dashboard/categories/edit/${id}`:
