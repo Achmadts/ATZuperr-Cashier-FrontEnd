@@ -17,6 +17,7 @@ import {
   DeleteOutlined,
   ArrowDropDownOutlined,
   ArrowDropUpOutlined,
+  InfoOutlined,
 } from "@mui/icons-material";
 
 const ProductTable = () => {
@@ -382,7 +383,7 @@ const ProductTable = () => {
                     <>
                       <th
                         className="border border-gray-300 px-4 py-2 text-center"
-                        style={{ width: "16.66%" }}
+                        style={{ width: "15%" }}
                       >
                         <div className="flex justify-center">
                           <Skeleton
@@ -394,7 +395,7 @@ const ProductTable = () => {
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2 text-center"
-                        style={{ width: "16.66%" }}
+                        style={{ width: "15%" }}
                       >
                         <div className="flex justify-center">
                           <Skeleton
@@ -406,7 +407,7 @@ const ProductTable = () => {
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2 text-center"
-                        style={{ width: "16.66%" }}
+                        style={{ width: "15%" }}
                       >
                         <div className="flex justify-center">
                           <Skeleton
@@ -418,7 +419,7 @@ const ProductTable = () => {
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2 text-center"
-                        style={{ width: "16.66%" }}
+                        style={{ width: "15%" }}
                       >
                         <div className="flex justify-center">
                           <Skeleton
@@ -430,7 +431,7 @@ const ProductTable = () => {
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2 text-center"
-                        style={{ width: "16.66%" }}
+                        style={{ width: "15%" }}
                       >
                         <div className="flex justify-center">
                           <Skeleton
@@ -442,7 +443,7 @@ const ProductTable = () => {
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2 text-center"
-                        style={{ width: "16.66%" }}
+                        style={{ width: "25%" }}
                       >
                         <div className="flex justify-center">
                           <Skeleton
@@ -457,37 +458,37 @@ const ProductTable = () => {
                     <>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "16.66%" }}
+                        style={{ width: "15%" }}
                       >
                         Product Code
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "16.66%" }}
+                        style={{ width: "15%" }}
                       >
                         Product Name
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "16.66%" }}
+                        style={{ width: "15%" }}
                       >
                         Cost
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "16.66%" }}
+                        style={{ width: "15%" }}
                       >
                         Price
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "16.66%" }}
+                        style={{ width: "15%" }}
                       >
                         Stock
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "16.66%" }}
+                        style={{ width: "25%" }}
                       >
                         Action
                       </th>
@@ -517,13 +518,20 @@ const ProductTable = () => {
                         <td className="border border-gray-300 px-4 py-2 flex justify-center items-center space-x-2">
                           <Skeleton
                             variant="rectangular"
-                            width={100}
+                            width={80}
                             height={30}
                           />
                           <div className="hidden md:flex">
                             <Skeleton
                               variant="rectangular"
                               width={100}
+                              height={30}
+                            />
+                          </div>
+                          <div className="hidden md:flex">
+                            <Skeleton
+                              variant="rectangular"
+                              width={80}
                               height={30}
                             />
                           </div>
@@ -572,7 +580,7 @@ const ProductTable = () => {
                             <h2 className="text-lg mb-4">Choose Action</h2>
                             <div className="flex flex-col space-y-2">
                               <button
-                                className="btn btn-primary"
+                                className="btn btn-primary text-white"
                                 onClick={() => {
                                   if (selectedProduct) {
                                     navigate(`edit/${selectedProduct.id}`);
@@ -582,6 +590,18 @@ const ProductTable = () => {
                                 }}
                               >
                                 Edit
+                              </button>
+                              <button
+                                className="btn btn-primary text-white"
+                                onClick={() => {
+                                  if (selectedProduct) {
+                                    navigate(`details/${selectedProduct.id}`);
+                                    console.log("ID: " + selectedProduct.id);
+                                  }
+                                  closeModal(true);
+                                }}
+                              >
+                                Details
                               </button>
                               <button
                                 className="btn btn-error"
@@ -614,6 +634,13 @@ const ProductTable = () => {
                             >
                               Edit
                               <ModeEditOutlineRounded className="group-hover:text-white transition duration-300" />
+                            </button>
+                            <button
+                              className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group"
+                              onClick={() => navigate(`details/${product.id}`)}
+                            >
+                              Details
+                              <InfoOutlined className="group-hover:text-white transition duration-300" />
                             </button>
                             <button
                               className="btn btn-sm btn-error text-white flex items-center justify-center px-2 py-1 group"

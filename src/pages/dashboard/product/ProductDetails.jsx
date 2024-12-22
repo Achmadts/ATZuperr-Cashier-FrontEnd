@@ -307,7 +307,7 @@ function ProductDetails() {
                 <div className="mt-6">
                   <Link
                     to="/dashboard/products"
-                    className="btn btn-primary text-white w-full"
+                    className="btn bg-gray-200 text-gray-800 w-full"
                   >
                     Back
                   </Link>
