@@ -133,7 +133,7 @@ const CategoryEdit = () => {
               {loading ? (
                 <div
                   className="w-full"
-                  style={{ minHeight: "240px", backgroundColor: "#f0f0f0" }}
+                  style={{ minHeight: "240px" }}
                 >
                   <div className="form-group mb-6">
                     <Skeleton
