@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import endpoints from "../constants/apiEndpoint";
+import { VisibilityOutlined, VisibilityOffOutlined } from "@mui/icons-material";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -9,6 +10,9 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState({
+    password: false,
+  });
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -100,6 +104,12 @@ const LoginPage = () => {
       setErrors({ form: "Terjadi kesalahan, coba lagi nanti." });
     }
   };
+  const togglePasswordVisibility = (field) => {
+    setShowPassword((prevState) => ({
+      ...prevState,
+      [field]: !prevState[field],
+    }));
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -143,19 +153,31 @@ const LoginPage = () => {
               Password
             </label>
             <div className="relative mt-1">
-              <input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                className={`w-full px-4 py-2 border ${
-                  errors.password ? "border-red-500" : "border-gray-300"
-                } rounded-lg focus:outline-none focus:ring focus:ring-blue-300`}
-              />
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-              )}
+              <div className="relative">
+                <input
+                  type={showPassword.password ? "text" : "password"}
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  className={`w-full px-4 py-2 border ${
+                    errors.password ? "border-red-500" : "border-gray-300"
+                  } rounded-lg focus:outline-none focus:ring focus:ring-blue-300`}
+                />
+                <span
+                  onClick={() => togglePasswordVisibility("password")}
+                  className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                >
+                  {showPassword.password ? (
+                    <VisibilityOutlined />
+                  ) : (
+                    <VisibilityOffOutlined />
+                  )}
+                </span>
+                {errors.password && (
+                  <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                )}
+              </div>
             </div>
           </div>
 
@@ -199,7 +221,7 @@ const LoginPage = () => {
         </form>
 
         <p className="text-center text-gray-500 text-sm mt-6">
-          Developed By{" "}
+          Developed By
           <span className="text-blue-600 font-bold">
             <a href="http://github.com/achmadts">Achmad Tirto Sudiro</a>
           </span>
