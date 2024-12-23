@@ -21,9 +21,7 @@ const UpdateProfileAndPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState({
-    current: false,
-    new: false,
-    confirm: false,
+    password: false,
   });
 
   useEffect(() => {
@@ -416,51 +414,27 @@ const UpdateProfileAndPassword = () => {
                     <label className="block text-gray-600 mb-2">
                       Current Password <span className="text-red-600">*</span>
                     </label>
-                    <div className="relative">
-                      <input
-                        type={showPassword.current ? "text" : "password"}
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        className="input input-bordered w-full border-gray-300 rounded"
-                        required
-                      />
-                      <span
-                        onClick={() => togglePasswordVisibility("current")}
-                        className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
-                      >
-                        {showPassword.current ? (
-                          <VisibilityOutlined />
-                        ) : (
-                          <VisibilityOffOutlined />
-                        )}
-                      </span>
-                    </div>
+                    <input
+                      type={showPassword.password ? "text" : "password"}
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                      className="input input-bordered w-full border-gray-300 rounded"
+                      required
+                    />
                   </div>
 
                   <div className="form-group mb-4">
                     <label className="block text-gray-600 mb-2">
                       New Password <span className="text-red-600">*</span>
                     </label>
-                    <div className="relative">
-                      <input
-                        type={showPassword.new ? "text" : "password"}
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        className="input input-bordered w-full border-gray-300 rounded"
-                        required
-                        minLength={6}
-                      />
-                      <span
-                        onClick={() => togglePasswordVisibility("new")}
-                        className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
-                      >
-                        {showPassword.new ? (
-                          <VisibilityOutlined />
-                        ) : (
-                          <VisibilityOffOutlined />
-                        )}
-                      </span>
-                    </div>
+                    <input
+                      type={showPassword.password ? "text" : "password"}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      className="input input-bordered w-full border-gray-300 rounded"
+                      required
+                      minLength={6}
+                    />
                   </div>
 
                   <div className="form-group mb-4">
@@ -469,7 +443,7 @@ const UpdateProfileAndPassword = () => {
                     </label>
                     <div className="relative">
                       <input
-                        type={showPassword.confirm ? "text" : "password"}
+                        type={showPassword.password ? "text" : "password"}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         className="input input-bordered w-full border-gray-300 rounded"
@@ -477,10 +451,10 @@ const UpdateProfileAndPassword = () => {
                         minLength={6}
                       />
                       <span
-                        onClick={() => togglePasswordVisibility("confirm")}
+                        onClick={() => togglePasswordVisibility("password")}
                         className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
                       >
-                        {showPassword.confirm ? (
+                        {showPassword.password ? (
                           <VisibilityOutlined />
                         ) : (
                           <VisibilityOffOutlined />
