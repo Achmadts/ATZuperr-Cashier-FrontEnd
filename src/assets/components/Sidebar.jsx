@@ -228,7 +228,7 @@ const SideBar = () => {
                       : undefined,
                 }}
               >
-                Dashboard
+                Dashboard (CS)
               </MenuItem>
               <MenuItem
                 icon={<UnfoldMoreDoubleOutlined />}
@@ -316,19 +316,62 @@ const SideBar = () => {
                 icon={<ReceiptOutlined />}
                 onClick={() => navigate("/purchases")}
               >
-                Purchases
+                Purchases (CS)
               </MenuItem>
               <MenuItem
                 icon={<PersonOutlined />}
-                onClick={() => navigate("/dashboard/sales")}
+                onClick={() => handleExpandClick("sales")}
+                style={{
+                  color: location.pathname.includes("/dashboard/sales")
+                    ? "#868dfb"
+                    : undefined,
+                }}
+                suffix={
+                  expandedMenu === "sales" ? (
+                    <ExpandLessOutlined />
+                  ) : (
+                    <ExpandMoreOutlined />
+                  )
+                }
               >
-                Sales
+                Sales Action (OP)
               </MenuItem>
+              <Collapse in={expandedMenu === "sales"}>
+                <Box
+                  pl={4}
+                  className="max-h-[300px] overflow-y-auto scrollbar-hide"
+                >
+                  <MenuItem
+                    icon={<PersonOutlined />}
+                    style={{
+                      color:
+                        location.pathname === "/dashboard/sales"
+                          ? "#868dfb"
+                          : undefined,
+                    }}
+                    onClick={() => navigate("/dashboard/sales")}
+                  >
+                    Sales
+                  </MenuItem>
+                  <MenuItem
+                    icon={<AddCircleOutlined />}
+                    style={{
+                      color:
+                        location.pathname === "/dashboard/sales/add"
+                          ? "#868dfb"
+                          : undefined,
+                    }}
+                    onClick={() => navigate("/dashboard/sales/add")}
+                  >
+                    Create Sales
+                  </MenuItem>
+                </Box>
+              </Collapse>
               <MenuItem
                 icon={<CalendarTodayOutlined />}
                 onClick={() => navigate("/expenses")}
               >
-                Expenses
+                Expenses (CS)
               </MenuItem>
               <MenuItem
                 icon={<SettingsOutlined />}

@@ -17,6 +17,8 @@ import ProductEdit from "./pages/dashboard/product/ProductEdit";
 import ProductAdd from "./pages/dashboard/product/ProductAdd";
 import ProductDetails from "./pages/dashboard/product/ProductDetails";
 
+import SalesAdd from "./pages/dashboard/sales/SalesAdd";
+
 
 function App() {
   return (
@@ -37,6 +39,11 @@ function App() {
                 <Route path="products/edit/:id" element={<ProductEdit />} />
                 <Route path="products/add" element={<ProductAdd />} />
                 <Route path="products/details/:id" element={<ProductDetails />} />
+
+                {/* <Route path="sales" element={<Sales />} /> */}
+                {/* <Route path="sales/edit/:id" element={<ProductEdit />} /> */}
+                <Route path="sales/add" element={<SalesAdd />} />
+                {/* <Route path="sales/details/:id" element={<ProductDetails />} /> */}
                 <Route
                   path="profile-password/:id"
                   element={<UpdateProfileAndPassword />}
