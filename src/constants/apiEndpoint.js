@@ -15,6 +15,10 @@ const endpoints = {
     // Produk
     product: `${API_BASE_URL}/produk`,
     productExport: `${API_BASE_URL}/produk-export`,
+
+    // Sale
+    sale: `${API_BASE_URL}/penjualan`,
+    saleExport: `${API_BASE_URL}/penjualan-export`,
 };
 
 export default endpoints;
