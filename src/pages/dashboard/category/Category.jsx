@@ -589,11 +589,12 @@ const CategoryTable = () => {
           />
         </div>
         <footer className="mt-8 text-center text-sm text-gray-500">
-          ATZuperrr Cashier © 2024 || Developed by{" "}
+          ATZuperrr Cashier © 2024 || Developed by
           <a
             href="http://github.com/achmadts"
             className="text-blue-500 hover:underline"
           >
+            {" "}
             Achmad Tirto Sudiro
           </a>
         </footer>

@@ -8,7 +8,8 @@ Modal.setAppElement("#root");
 import showToast from "../../../utils/showToast";
 import Pagination from "../../../assets/components/partials/Pagination";
 import { useNavigate } from "react-router-dom";
-import { Skeleton } from "@mui/material";
+import { Skeleton, useTheme } from "@mui/material";
+import { tokens } from "../../../theme";
 
 import {
   DescriptionOutlined,
@@ -18,14 +19,19 @@ import {
   ArrowDropDownOutlined,
   ArrowDropUpOutlined,
   InfoOutlined,
+  CheckCircleOutlined,
+  RunningWithErrorsOutlined,
+  CancelOutlined,
 } from "@mui/icons-material";
 
-const ProductTable = () => {
-  const [products, setProducts] = useState([]);
+const SalesTable = () => {
+  const [sales, setSales] = useState([]);
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedSale, setSelectedSale] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -33,7 +39,6 @@ const ProductTable = () => {
   const [showEntries, setShowEntries] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  // const [selectedAction] = useState("");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -84,12 +89,12 @@ const ProductTable = () => {
     }
   }, [navigate, currentPage, showEntries]);
 
-  const fetchProducts = async () => {
+  const fetchSales = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("access_token");
       const response = await fetch(
-        `${endpoints.product}?page=${currentPage}&per_page=${showEntries}&searchTerm=${searchTerm}`,
+        `${endpoints.sale}?page=${currentPage}&per_page=${showEntries}&searchTerm=${searchTerm}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -99,35 +104,35 @@ const ProductTable = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch products.");
+        throw new Error("Failed to fetch sales.");
       }
 
       const result = await response.json();
 
       if (result.success && Array.isArray(result.data.data)) {
-        setProducts(result.data.data);
+        setSales(result.data.data);
         setTotalPages(result.data.meta.last_page || 1);
       } else {
         console.error("Data fetched is not an array:", result.data);
-        setProducts([]);
+        setSales([]);
       }
     } catch (error) {
       console.error(error);
-      showToast("Gagal mengambil data Produk.", "error");
+      showToast("Gagal mengambil data Penjualan.", "error");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProducts();
+    fetchSales();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, showEntries, debouncedSearchTerm]);
 
-  const handleDeleteProduct = async (id) => {
+  const handleDeleteSale = async (id) => {
     try {
       const token = localStorage.getItem("access_token");
-      const response = await fetch(`${endpoints.product}/${id}`, {
+      const response = await fetch(`${endpoints.sale}/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -136,14 +141,14 @@ const ProductTable = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Gagal menghapus produk.");
+        throw new Error("Gagal menghapus penjualan.");
       }
 
-      showToast("Produk berhasil dihapus.", "success");
-      fetchProducts();
+      showToast("Penjualan berhasil dihapus.", "success");
+      fetchSales();
     } catch (error) {
       console.error(error);
-      showToast("Terjadi kesalahan saat menghapus produk.", "error");
+      showToast("Terjadi kesalahan saat menghapus data penjualan.", "error");
     }
   };
 
@@ -155,7 +160,7 @@ const ProductTable = () => {
     }
 
     try {
-      const response = await fetch(endpoints.productExport, {
+      const response = await fetch(endpoints.saleExport, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -172,7 +177,7 @@ const ProductTable = () => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "products.xlsx";
+      link.download = "sales.xlsx";
       link.click();
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -181,13 +186,64 @@ const ProductTable = () => {
     }
   };
 
+  const renderStatus = (status) => {
+    switch (status) {
+      case "Completed":
+        return (
+          <span
+            style={{
+              color: colors.greenAccent[500],
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: 1,
+            }}
+          >
+            <CheckCircleOutlined style={{ marginRight: 4 }} />
+            {status}
+          </span>
+        );
+      case "Pending":
+        return (
+          <span
+            style={{
+              color: "#868dfb",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: 1,
+            }}
+          >
+            <RunningWithErrorsOutlined style={{ marginRight: 4 }} />
+            {status}
+          </span>
+        );
+      case "Cancelled":
+        return (
+          <span
+            style={{
+              color: "#dc2626",
+              display: "flex",
+              alignItems: "center",
+              marginTop: 1,
+            }}
+          >
+            <CancelOutlined style={{ marginRight: 4 }} />
+            {status}
+          </span>
+        );
+      default:
+        return status;
+    }
+  };
+
   const openModalActionDelete = (id) => {
-    setSelectedProduct(id);
+    setSelectedSale(id);
     setOpenModalDelete(true);
   };
 
   const closeModalDelete = () => {
-    setSelectedProduct(null);
+    setSelectedSale(null);
     setOpenModalDelete(false);
   };
 
@@ -199,7 +255,7 @@ const ProductTable = () => {
 
   const handleReload = () => {
     setLoading(true);
-    fetchProducts();
+    fetchSales();
   };
 
   const toggleDropdown = (id) => {
@@ -219,8 +275,8 @@ const ProductTable = () => {
     setSearchTerm(e.target.value);
   };
 
-  const openModalWithProduct = (product) => {
-    setSelectedProduct(product);
+  const openModalWithSale = (sale) => {
+    setSelectedSale(sale);
     setOpenModal(true);
   };
 
@@ -274,7 +330,7 @@ const ProductTable = () => {
                     navigate("add");
                   }}
                 >
-                  Add Product +
+                  Add Sale +
                 </button>
                 <div className="flex space-x-2">
                   <div className="hidden md:flex space-x-2">
@@ -383,7 +439,7 @@ const ProductTable = () => {
                     <>
                       <th
                         className="border border-gray-300 px-4 py-2 text-center"
-                        style={{ width: "15%" }}
+                        style={{ width: "5%" }}
                       >
                         <div className="flex justify-center">
                           <Skeleton
@@ -395,7 +451,7 @@ const ProductTable = () => {
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2 text-center"
-                        style={{ width: "15%" }}
+                        style={{ width: "10.71%" }}
                       >
                         <div className="flex justify-center">
                           <Skeleton
@@ -407,7 +463,31 @@ const ProductTable = () => {
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2 text-center"
-                        style={{ width: "15%" }}
+                        style={{ width: "10.71%" }}
+                      >
+                        <div className="flex justify-center">
+                          <Skeleton
+                            variant="rectangular"
+                            width="30%"
+                            height={20}
+                          />
+                        </div>
+                      </th>
+                      <th
+                        className="border border-gray-300 px-4 py-2 text-center"
+                        style={{ width: "10.71%" }}
+                      >
+                        <div className="flex justify-center">
+                          <Skeleton
+                            variant="rectangular"
+                            width="30%"
+                            height={20}
+                          />
+                        </div>
+                      </th>
+                      <th
+                        className="border border-gray-300 px-4 py-2 text-center"
+                        style={{ width: "10.71%" }}
                       >
                         <div className="flex justify-center">
                           <Skeleton
@@ -419,7 +499,7 @@ const ProductTable = () => {
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2 text-center"
-                        style={{ width: "15%" }}
+                        style={{ width: "10.71%" }}
                       >
                         <div className="flex justify-center">
                           <Skeleton
@@ -431,7 +511,7 @@ const ProductTable = () => {
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2 text-center"
-                        style={{ width: "15%" }}
+                        style={{ width: "10.71%" }}
                       >
                         <div className="flex justify-center">
                           <Skeleton
@@ -458,37 +538,49 @@ const ProductTable = () => {
                     <>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "15%" }}
+                        style={{ width: "5%" }}
                       >
-                        Product Code
+                        Product ID
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "15%" }}
+                        style={{ width: "10.71%" }}
                       >
-                        Product Name
+                        Product name
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "15%" }}
+                        style={{ width: "10.71%" }}
                       >
-                        Cost
+                        Sale date
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "15%" }}
+                        style={{ width: "10.71%" }}
                       >
-                        Price
+                        Customer name
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "15%" }}
+                        style={{ width: "10.71%" }}
                       >
-                        Stock
+                        Quantity
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
-                        style={{ width: "25%" }}
+                        style={{ width: "10.71%" }}
+                      >
+                        Total price
+                      </th>
+                      <th
+                        className="border border-gray-300 px-4 py-2"
+                        style={{ width: "10.71%" }}
+                      >
+                        Status
+                      </th>
+                      <th
+                        className="border border-gray-300 px-4 py-2"
+                        style={{ width: "30.71%" }}
                       >
                         Action
                       </th>
@@ -500,6 +592,12 @@ const ProductTable = () => {
                 {loading
                   ? Array.from({ length: 5 }).map((_, index) => (
                       <tr key={index}>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <Skeleton variant="text" width="80%" />
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <Skeleton variant="text" width="80%" />
+                        </td>
                         <td className="border border-gray-300 px-4 py-2">
                           <Skeleton variant="text" width="80%" />
                         </td>
@@ -538,34 +636,44 @@ const ProductTable = () => {
                         </td>
                       </tr>
                     ))
-                  : products.map((product, index) => (
-                      <tr
-                        key={
-                          product.id
-                            ? `product-${product.id}`
-                            : `product-${index}`
-                        }
-                      >
+                  : sales.map((sale) => (
+                      <tr key={sale.id}>
                         <td className="border border-gray-300 px-4 py-2">
-                          {product.kode_produk}
+                          {sale.detail_penjualans?.map((detail) => (
+                            <div key={detail.id}>{detail.id_produk}</div>
+                          ))}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
-                          {product.nama_produk}
+                          {sale.detail_penjualans?.map((detail) => (
+                            <div key={detail.id}>{detail.nama_produk}</div>
+                          ))}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
-                          {product.harga_beli}
+                          {sale.tanggal_penjualan}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
-                          {product.harga_jual}
+                          {sale.nama_pelanggan}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
-                          {product.stok}
+                          {sale.quantity}
+                        </td>
+                        <td>{`Rp. ${new Intl.NumberFormat("id-ID", {
+                          style: "currency",
+                          currency: "IDR",
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })
+                          .format(sale.total_harga)
+                          .replace("Rp", "")
+                          .trim()}`}</td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {renderStatus(sale.status)}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           <div className="md:hidden">
                             <button
                               className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1"
-                              onClick={() => openModalWithProduct(product)}
+                              onClick={() => openModalWithSale(sale)}
                             >
                               Actions
                             </button>
@@ -582,9 +690,9 @@ const ProductTable = () => {
                               <button
                                 className="btn btn-primary text-white"
                                 onClick={() => {
-                                  if (selectedProduct) {
-                                    navigate(`edit/${selectedProduct.id}`);
-                                    console.log("ID: " + selectedProduct.id);
+                                  if (selectedSale) {
+                                    navigate(`edit/${selectedSale.id}`);
+                                    console.log("ID: " + selectedSale.id);
                                   }
                                   closeModal(true);
                                 }}
@@ -598,9 +706,9 @@ const ProductTable = () => {
                                   borderColor: "#868dfb",
                                 }}
                                 onClick={() => {
-                                  if (selectedProduct) {
-                                    navigate(`details/${selectedProduct.id}`);
-                                    console.log("ID: " + selectedProduct.id);
+                                  if (selectedSale) {
+                                    navigate(`details/${selectedSale.id}`);
+                                    console.log("ID: " + selectedSale.id);
                                   }
                                   closeModal(true);
                                 }}
@@ -610,11 +718,11 @@ const ProductTable = () => {
                               <button
                                 className="btn btn-error"
                                 onClick={() => {
-                                  if (selectedProduct && selectedProduct.id) {
-                                    handleDeleteProduct(selectedProduct.id);
+                                  if (selectedSale && selectedSale.id) {
+                                    handleDeleteSale(selectedSale.id);
                                   } else {
                                     showToast(
-                                      "Gagal menghapus. Produk tidak valid.",
+                                      "Gagal menghapus. Penjualan tidak valid.",
                                       "error"
                                     );
                                   }
@@ -634,7 +742,7 @@ const ProductTable = () => {
                           <div className="hidden md:flex space-x-1 justify-center items-center">
                             <button
                               className="btn btn-sm btn-primary text-white flex items-center justify-center px-2 py-1 group"
-                              onClick={() => navigate(`edit/${product.id}`)}
+                              onClick={() => navigate(`edit/${sale.id}`)}
                             >
                               Edit
                               <ModeEditOutlineRounded className="group-hover:text-white transition duration-300" />
@@ -645,7 +753,7 @@ const ProductTable = () => {
                                 backgroundColor: "#868dfb",
                                 border: "none",
                               }}
-                              onClick={() => navigate(`details/${product.id}`)}
+                              onClick={() => navigate(`details/${sale.id}`)}
                             >
                               Details
                               <InfoOutlined
@@ -657,7 +765,7 @@ const ProductTable = () => {
                             </button>
                             <button
                               className="btn btn-sm btn-error text-white flex items-center justify-center px-2 py-1 group"
-                              onClick={() => openModalActionDelete(product.id)}
+                              onClick={() => openModalActionDelete(sale.id)}
                             >
                               Delete
                               <DeleteOutlined className="group-hover:text-white transition duration-300" />
@@ -672,14 +780,14 @@ const ProductTable = () => {
                             overlayClassName="fixed inset-0 bg-black bg-opacity-[1%] flex justify-center items-center"
                           >
                             <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                              Are you sure you want to delete this product?
+                              Are you sure you want to delete this sale?
                             </h2>
                             <div className="flex justify-end space-x-3">
                               <button
                                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
                                 onClick={() => {
-                                  if (selectedProduct) {
-                                    handleDeleteProduct(selectedProduct);
+                                  if (selectedSale) {
+                                    handleDeleteSale(selectedSale);
                                   }
                                   closeModalDelete(true);
                                 }}
@@ -721,4 +829,4 @@ const ProductTable = () => {
   );
 };
 
-export default ProductTable;
+export default SalesTable;

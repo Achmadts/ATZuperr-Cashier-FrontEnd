@@ -195,7 +195,7 @@ const SideBar = () => {
                     color={colors.greenAccent[500]}
                     sx={{ fontSize: "14px" }}
                   >
-                    {isAdmin === 1 ? "Admin" : "User"}
+                    {isAdmin === 1 ? "Admin" : "Cashier"}
                   </Typography>
                 </Box>
               </>

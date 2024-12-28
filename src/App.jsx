@@ -17,7 +17,9 @@ import ProductEdit from "./pages/dashboard/product/ProductEdit";
 import ProductAdd from "./pages/dashboard/product/ProductAdd";
 import ProductDetails from "./pages/dashboard/product/ProductDetails";
 
+import Sales from "./pages/dashboard/sales/Sales";
 import SalesAdd from "./pages/dashboard/sales/SalesAdd";
+import SalesEdit from "./pages/dashboard/sales/SalesEdit";
 
 
 function App() {
@@ -40,8 +42,8 @@ function App() {
                 <Route path="products/add" element={<ProductAdd />} />
                 <Route path="products/details/:id" element={<ProductDetails />} />
 
-                {/* <Route path="sales" element={<Sales />} /> */}
-                {/* <Route path="sales/edit/:id" element={<ProductEdit />} /> */}
+                <Route path="sales" element={<Sales />} />
+                <Route path="sales/edit/:id" element={<SalesEdit />} />
                 <Route path="sales/add" element={<SalesAdd />} />
                 {/* <Route path="sales/details/:id" element={<ProductDetails />} /> */}
                 <Route
