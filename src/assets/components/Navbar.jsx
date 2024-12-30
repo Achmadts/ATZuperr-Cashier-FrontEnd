@@ -39,6 +39,8 @@ const Navbar = () => {
         return "Sales";
       case "/dashboard/sales/add":
         return "Add Sales";
+      case `/dashboard/sales/edit/${id}`:
+        return "Edit Sale";
       default:
         return "Dashboard";
     }
