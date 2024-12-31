@@ -12,19 +12,37 @@ Modal.setAppElement("#root");
 
 function SalesEdit() {
   const navigate = useNavigate();
-  const { id } = useParams(); // Get ID from route params
+  const { id } = useParams();
   const [addedProducts, setAddedProducts] = useState([]);
-  // eslint-disable-next-line no-unused-vars
+  const [products, setProducts] = useState([]);
   const [quantities, setQuantities] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  // eslint-disable-next-line no-unused-vars
   const [searchTerm, setSearchTerm] = useState("");
-  // eslint-disable-next-line no-unused-vars
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
-  // eslint-disable-next-line no-unused-vars
   const [openModalDelete, setOpenModalDelete] = useState(false);
-  // eslint-disable-next-line no-unused-vars
   const [selectedProduct, setSelectedProduct] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+    const lastInteraction = localStorage.getItem("last_interaction");
+    const currentTime = new Date().getTime();
+    const interactionTime = parseInt(lastInteraction, 10);
+
+    if (!token || !lastInteraction) {
+      navigate("/");
+      return;
+    }
+
+    if (currentTime - interactionTime > 60 * 60 * 1000) {
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("last_interaction");
+      navigate("/");
+    } else {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
+    }
+  }, [navigate]);
 
   const [formData, setFormData] = useState({
     customer: "",
@@ -57,26 +75,41 @@ function SalesEdit() {
 
         const result = await response.json();
         if (result.success) {
+          const totalHarga = parseFloat(result.data.total_harga);
+          const taxPercentage = Math.round(
+            (parseFloat(result.data.pajak) / totalHarga) * 100
+          );
+          const discountPercentage = Math.round(
+            (parseFloat(result.data.diskon) / totalHarga) * 100
+          );
+
           setFormData({
             customer: result.data.nama_pelanggan || "",
             date: result.data.tanggal_penjualan || "",
-            discount: result.data.diskon || 0,
-            tax: result.data.pajak || 10,
-            grandTotal: result.data.total_harga || 0,
+            discount: discountPercentage,
+            tax: taxPercentage,
+            grandTotal: totalHarga || 0,
             status: result.data.status || "Pending",
             paymentMethod: result.data.metode_pembayaran || "Cash",
             note: result.data.catatan || "",
           });
-          setAddedProducts(result.data.products || []);
-          setQuantities(
-            result.data.products.reduce((acc, product) => {
-              acc[product.id] = product.quantity;
-              return acc;
-            }, {})
+
+          const mappedProducts = result.data.detail_penjualans.map(
+            (product) => ({
+              id: product.id,
+              id_produk: product.id_produk,
+              nama_produk: product.nama_produk,
+              quantity: product.jumlah_produk,
+              harga_jual: parseFloat(product.sub_total) / product.jumlah_produk,
+              subtotal: parseFloat(product.sub_total),
+            })
           );
+
+          setAddedProducts(mappedProducts);
         }
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
-        console.error(error);
+        // console.error(error);
         showToast("Gagal mengambil data penjualan.", "error");
       } finally {
         setIsLoading(false);
@@ -85,6 +118,183 @@ function SalesEdit() {
 
     fetchSaleData();
   }, [id]);
+
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(
+        `${endpoints.product}?searchTerm=${searchTerm}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch products.");
+      }
+
+      const result = await response.json();
+
+      if (result.success && Array.isArray(result.data.data)) {
+        setProducts(result.data.data);
+        const initialQuantities = result.data.data.reduce((acc, product) => {
+          acc[product.id] = 0;
+          return acc;
+        }, {});
+        setQuantities(initialQuantities);
+      } else {
+        // console.error("Data fetched is not an array:", result.data);
+        setProducts([]);
+      }
+      // eslint-disable-next-line no-unused-vars
+    } catch (error) {
+      // console.error(error);
+      showToast("Gagal mengambil data Produk.", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const addProduct = (product) => {
+    const quantity = quantities[product.id];
+    if (quantity === 0) {
+      showToast(
+        `Please set a valid quantity for ${product.nama_produk}!`,
+        "error"
+      );
+      return;
+    }
+
+    const subtotal = product.harga_jual * quantity;
+
+    setAddedProducts((prevProducts) => {
+      if (!Array.isArray(prevProducts)) {
+        // console.error("Invalid state: addedProducts is not an array");
+        return [];
+      }
+
+      const existingProductIndex = prevProducts.findIndex(
+        (p) => p.id_produk === product.id
+      );
+
+      if (existingProductIndex !== -1) {
+        const existingProduct = prevProducts[existingProductIndex];
+
+        if (existingProduct.quantity !== quantity) {
+          const updatedProducts = [...prevProducts];
+          updatedProducts[existingProductIndex] = {
+            ...existingProduct,
+            quantity,
+            subtotal,
+          };
+
+          setTimeout(() => {
+            showToast(`Updated quantity for ${product.nama_produk}!`, "info");
+          }, 0);
+          return updatedProducts;
+        }
+
+        return prevProducts;
+      }
+
+      setTimeout(() => {
+        showToast(`Product ${product.nama_produk} added!`, "success");
+      }, 0);
+
+      return [
+        ...prevProducts,
+        {
+          id_produk: product.id,
+          nama_produk: product.nama_produk,
+          harga_jual: product.harga_jual,
+          stok: product.stok,
+          quantity,
+          subtotal,
+        },
+      ];
+    });
+
+    setFormData((prevFormData) => {
+      if (!Array.isArray(prevFormData.products)) {
+        // console.error("Invalid state: formData.products is not an array");
+        return { ...prevFormData, products: [] };
+      }
+
+      const existingFormProductIndex = prevFormData.products.findIndex(
+        (p) => p.id_produk === product.id
+      );
+
+      if (existingFormProductIndex !== -1) {
+        const updatedProducts = [...prevFormData.products];
+        updatedProducts[existingFormProductIndex] = {
+          ...updatedProducts[existingFormProductIndex],
+          quantity,
+          subtotal,
+        };
+        return {
+          ...prevFormData,
+          products: updatedProducts,
+        };
+      }
+
+      return {
+        ...prevFormData,
+        products: [
+          ...prevFormData.products,
+          {
+            id_produk: product.id,
+            nama_produk: product.nama_produk,
+            harga_jual: product.harga_jual,
+            quantity,
+            subtotal,
+          },
+        ],
+      };
+    });
+  };
+
+  const handleQuantityChange = (productId, value) => {
+    let updatedValue = value.replace(/^0+/, "");
+
+    if (updatedValue === "") {
+      updatedValue = "0";
+    }
+
+    const product = products.find((p) => p.id === productId);
+    if (!product) {
+      // console.error(`Product with ID ${productId} not found in products list.`);
+      return;
+    }
+
+    const validValue = Math.min(
+      Math.max(Number(updatedValue), 0),
+      product.stok
+    );
+
+    setQuantities((prev) => ({
+      ...prev,
+      [productId]: validValue,
+    }));
+  };
+
+  const handleUpdateQuantity = (productId, newQuantity) => {
+    setAddedProducts((prevProducts) =>
+      prevProducts.map((product) =>
+        product.id === productId
+          ? { ...product, quantity: newQuantity }
+          : product
+      )
+    );
+  };
+
+  useEffect(() => {
+    fetchProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearchTerm]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -98,44 +308,60 @@ function SalesEdit() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  //   const handleQuantityChange = (productId, value) => {
-  //     let updatedValue = value.replace(/^0+/, "");
+  const handleRemoveProduct = (productId) => {
+    setAddedProducts((prevProducts) => {
+      const productToRemove = prevProducts.find(
+        (product) => product.id === productId
+      );
 
-  //     if (updatedValue === "") {
-  //       updatedValue = "0";
-  //     }
+      if (productToRemove) {
+        showToast(
+          `Successfully deleted ${productToRemove.nama_produk}!`,
+          "info"
+        );
+      }
+      return prevProducts.filter((product) => product.id !== productId);
+    });
 
-  //     const validValue = Math.min(
-  //       Math.max(Number(updatedValue), 0),
-  //       addedProducts.find((p) => p.id === productId).stok
-  //     );
+    closeDeleteModal();
+  };
 
-  //     setQuantities((prev) => ({
-  //       ...prev,
-  //       [productId]: validValue,
-  //     }));
-  //   };
+  const openDeleteModal = (product) => {
+    setSelectedProduct(product);
+    setOpenModalDelete(true);
+  };
 
-  const handleUpdateQuantity = (productId, newQuantity) => {
-    setAddedProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product.id === productId
-          ? { ...product, quantity: newQuantity }
-          : product
-      )
-    );
+  const closeDeleteModal = () => {
+    setOpenModalDelete(false);
+    setSelectedProduct(null);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const validProducts = addedProducts.filter(
+      (product) => product.id_produk !== null
+    );
+
+    if (validProducts.length === 0) {
+      showToast(
+        "Tidak ada produk valid untuk disimpan. Silakan tambahkan produk yang benar.",
+        "error"
+      );
+      return;
+    }
+
     const payload = {
       nama_pelanggan: formData.customer,
-      id_produk: addedProducts.map((p) => p.id),
-      jumlah_produk: addedProducts.map((p) => p.quantity),
-      sub_total: addedProducts.map((p) => p.harga_jual * p.quantity),
+      id_produk: validProducts.map((p) => p.id_produk),
+      jumlah_produk: validProducts.map((p) => p.quantity),
+      sub_total: validProducts.map((p) => p.harga_jual * p.quantity),
       tanggal_penjualan: formData.date,
-      quantity: addedProducts.reduce((total, p) => total + p.quantity, 0),
+      quantity: validProducts.reduce((total, p) => total + p.quantity, 0),
       pajak: calculateTax(),
       diskon: calculateDiscountAfterTax(),
       total_harga: calculateGrandTotal(),
@@ -143,6 +369,8 @@ function SalesEdit() {
       metode_pembayaran: formData.paymentMethod,
       catatan: formData.note,
     };
+
+    // console.log("Payload to be sent:", payload);
 
     try {
       setIsLoading(true);
@@ -160,19 +388,17 @@ function SalesEdit() {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        showToast("Sales updated successfully!", "success");
-        navigate(`/dashboard/sales/${id}`);
+        showToast("Penjualan berhasil diperbarui!", "success");
+        navigate(`/dashboard/sales/edit/${id}`);
       } else {
-        const errorMessage =
-          result.message ||
-          "Failed to update sales. Please check the input and try again.";
+        const errorMessage = result.message || "Gagal memperbarui penjualan.";
         showToast(errorMessage, "error");
-
-        console.error("Validation errors:", result.data);
+        // console.error("Validation errors:", result.data);
       }
+      // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      console.error("Unexpected error:", error);
-      showToast("An unexpected error occurred. Please try again.", "error");
+      // console.error("Unexpected error:", error);
+      showToast("Terjadi kesalahan. Silakan coba lagi.", "error");
     } finally {
       setIsLoading(false);
     }
@@ -226,7 +452,7 @@ function SalesEdit() {
                 <input
                   type="text"
                   value={searchTerm}
-                  //   onChange={handleSearchChange}
+                  onChange={handleSearchChange}
                   autoComplete="off"
                   placeholder="Type product name or code..."
                   className="input input-bordered w-full pl-10"
@@ -337,7 +563,7 @@ function SalesEdit() {
                       <th>Action</th>
                     </tr>
                   </thead>
-                  {/* <tbody>
+                  <tbody>
                     {isLoading ? (
                       <tr>
                         <td colSpan="6">
@@ -389,7 +615,12 @@ function SalesEdit() {
                               <button
                                 type="button"
                                 className="btn btn-primary text-white"
-                                onClick={() => addProduct(product)}
+                                onClick={() =>
+                                  addProduct({
+                                    ...product,
+                                    id_produk: product.id,
+                                  })
+                                }
                                 disabled={quantity === 0}
                               >
                                 Add
@@ -407,7 +638,7 @@ function SalesEdit() {
                         </td>
                       </tr>
                     )}
-                  </tbody> */}
+                  </tbody>
                 </table>
               )}
             </div>
@@ -475,9 +706,10 @@ function SalesEdit() {
                               )}`}</span>
                               <button
                                 className="px-2 py-1 text-xs bg-gray-300 rounded hover:bg-gray-400"
-                                onClick={() => {
+                                onClick={(e) => {
+                                  e.preventDefault();
                                   if (product.quantity === 1) {
-                                    // openDeleteModal(product);
+                                    openDeleteModal(product);
                                   } else {
                                     handleUpdateQuantity(
                                       product.id,
@@ -494,9 +726,8 @@ function SalesEdit() {
                       </ul>
                       <Modal
                         isOpen={openModalDelete}
-                        // onRequestClose={closeDeleteModal}
+                        onRequestClose={closeDeleteModal}
                         contentLabel="Delete Confirmation"
-                        ariaHideApp={false}
                         className="relative bg-white p-6 rounded-lg shadow-lg max-w-sm mx-auto"
                         overlayClassName="fixed inset-0 bg-black bg-opacity-25 flex justify-center items-center"
                       >
@@ -505,15 +736,15 @@ function SalesEdit() {
                         </h2>
                         <div className="flex justify-end space-x-3">
                           <button
-                            // onClick={() =>
-                            //   handleRemoveProduct(selectedProduct?.id)
-                            // }
+                            onClick={() => {
+                              handleRemoveProduct(selectedProduct?.id);
+                            }}
                             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
                           >
                             Yes, Remove
                           </button>
                           <button
-                            // onClick={closeDeleteModal}
+                            onClick={closeDeleteModal}
                             className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition duration-200"
                           >
                             Cancel
@@ -736,7 +967,6 @@ function SalesEdit() {
                 </div>
               </div>
             )}
-
             {isLoading ? (
               <div className="mt-6">
                 <Skeleton
@@ -749,9 +979,20 @@ function SalesEdit() {
               <div className="mt-6">
                 <button
                   type="submit"
-                  className="btn btn-primary w-full text-white"
+                  className={`btn btn-primary w-full text-white ${
+                    addedProducts.filter(
+                      (product) => product.id_produk !== null
+                    ).length === 0
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
+                  disabled={
+                    addedProducts.filter(
+                      (product) => product.id_produk !== null
+                    ).length === 0
+                  }
                 >
-                  {isLoading ? "Submitting..." : "Create Sale"}
+                  {isLoading ? "Submitting..." : "Edit Sale"}
                 </button>
               </div>
             )}
