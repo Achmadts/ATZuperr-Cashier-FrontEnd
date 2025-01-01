@@ -583,6 +583,10 @@ function SalesEdit() {
                         const quantity = quantities[product.id] || 0;
                         const remainingStock = product.stok - quantity;
                         const subtotal = product.harga_jual * quantity;
+                        const isProductAdded = addedProducts.some(
+                          (addedProduct) =>
+                            addedProduct.id_produk === product.id
+                        );
 
                         return (
                           <tr
@@ -623,7 +627,7 @@ function SalesEdit() {
                                 }
                                 disabled={quantity === 0}
                               >
-                                Add
+                                {isProductAdded ? "Update" : "Add"}
                               </button>
                             </td>
                           </tr>
