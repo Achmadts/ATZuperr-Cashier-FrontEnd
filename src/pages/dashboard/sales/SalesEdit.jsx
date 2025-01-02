@@ -75,20 +75,27 @@ function SalesEdit() {
 
         const result = await response.json();
         if (result.success) {
-          const totalHarga = parseFloat(result.data.total_harga);
-          const taxPercentage = Math.round(
-            (parseFloat(result.data.pajak) / totalHarga) * 100
-          );
-          const discountPercentage = Math.round(
-            (parseFloat(result.data.diskon) / totalHarga) * 100
-          );
+          const totalHarga = parseFloat(result.data.total_harga || 0);
+          const taxValue = parseFloat(result.data.pajak || 0);
+          const discountValue = parseFloat(result.data.diskon || 0);
+          const hargaSetelahPajak = totalHarga + discountValue;
+
+          const taxPercentage = (
+            (taxValue / (hargaSetelahPajak - taxValue)) *
+            100
+          ).toFixed(2);
+          
+          const discountPercentage = (
+            (discountValue / hargaSetelahPajak) *
+            100
+          ).toFixed(2);
 
           setFormData({
             customer: result.data.nama_pelanggan || "",
             date: result.data.tanggal_penjualan || "",
-            discount: discountPercentage,
-            tax: taxPercentage,
-            grandTotal: totalHarga || 0,
+            discount: parseFloat(discountPercentage),
+            tax: parseFloat(taxPercentage),
+            grandTotal: totalHarga,
             status: result.data.status || "Pending",
             paymentMethod: result.data.metode_pembayaran || "Cash",
             note: result.data.catatan || "",
@@ -107,9 +114,8 @@ function SalesEdit() {
 
           setAddedProducts(mappedProducts);
         }
-        // eslint-disable-next-line no-unused-vars
+      // eslint-disable-next-line no-unused-vars
       } catch (error) {
-        // console.error(error);
         showToast("Gagal mengambil data penjualan.", "error");
       } finally {
         setIsLoading(false);
