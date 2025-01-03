@@ -879,7 +879,7 @@ function SalesEdit() {
                   >
                     <option value="Pending">Pending</option>
                     <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
+                    {/* <option value="Cancelled">Cancelled</option> */}
                   </select>
                 </div>
                 <div className="flex-1">

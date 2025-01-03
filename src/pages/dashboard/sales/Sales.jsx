@@ -17,11 +17,12 @@ import {
   ModeEditOutlineRounded,
   DeleteOutlined,
   ArrowDropDownOutlined,
+  // FilterAltOutlined,
   ArrowDropUpOutlined,
   InfoOutlined,
   CheckCircleOutlined,
   RunningWithErrorsOutlined,
-  CancelOutlined,
+  // CancelOutlined,
 } from "@mui/icons-material";
 
 const SalesTable = () => {
@@ -218,20 +219,20 @@ const SalesTable = () => {
             {status}
           </span>
         );
-      case "Cancelled":
-        return (
-          <span
-            style={{
-              color: "#dc2626",
-              display: "flex",
-              alignItems: "center",
-              marginTop: 1,
-            }}
-          >
-            <CancelOutlined style={{ marginRight: 4 }} />
-            {status}
-          </span>
-        );
+      // case "Cancelled":
+      //   return (
+      //     <span
+      //       style={{
+      //         color: "#dc2626",
+      //         display: "flex",
+      //         alignItems: "center",
+      //         marginTop: 1,
+      //       }}
+      //     >
+      //       <CancelOutlined style={{ marginRight: 4 }} />
+      //       {status}
+      //     </span>
+      //   );
       default:
         return status;
     }
@@ -309,6 +310,12 @@ const SalesTable = () => {
                       height={40}
                       className="flex items-center px-2 py-2 bg-gray-200 text-gray-800 rounded-lg shadow"
                     />
+                    {/* <Skeleton
+                      variant="rectangular"
+                      width={56}
+                      height={40}
+                      className="flex items-center px-2 py-2 bg-gray-200 text-gray-800 rounded-lg shadow"
+                    /> */}
                   </div>
                   <div className="md:hidden relative">
                     <Skeleton
@@ -348,6 +355,12 @@ const SalesTable = () => {
                       <Replay className="mr-2" />
                       Reload
                     </button>
+                    {/* <button
+                      className="flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-lg shadow hover:bg-gray-300"
+                      onClick={}
+                    >
+                      <FilterAltOutlined />
+                    </button> */}
                   </div>
                   <div className="md:hidden relative">
                     <button
