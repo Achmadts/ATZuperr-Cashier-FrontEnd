@@ -20,6 +20,7 @@ import ProductDetails from "./pages/dashboard/product/ProductDetails";
 import Sales from "./pages/dashboard/sales/Sales";
 import SalesAdd from "./pages/dashboard/sales/SalesAdd";
 import SalesEdit from "./pages/dashboard/sales/SalesEdit";
+import SalesDetails from "./pages/dashboard/sales/SalesDetails";
 
 
 function App() {
@@ -45,7 +46,7 @@ function App() {
                 <Route path="sales" element={<Sales />} />
                 <Route path="sales/edit/:id" element={<SalesEdit />} />
                 <Route path="sales/add" element={<SalesAdd />} />
-                {/* <Route path="sales/details/:id" element={<ProductDetails />} /> */}
+                <Route path="sales/details/:id" element={<SalesDetails />} />
                 <Route
                   path="profile-password/:id"
                   element={<UpdateProfileAndPassword />}
