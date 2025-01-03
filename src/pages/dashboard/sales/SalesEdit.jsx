@@ -84,7 +84,7 @@ function SalesEdit() {
             (taxValue / (hargaSetelahPajak - taxValue)) *
             100
           ).toFixed(2);
-          
+
           const discountPercentage = (
             (discountValue / hargaSetelahPajak) *
             100
@@ -114,7 +114,7 @@ function SalesEdit() {
 
           setAddedProducts(mappedProducts);
         }
-      // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         showToast("Gagal mengambil data penjualan.", "error");
       } finally {
@@ -317,16 +317,24 @@ function SalesEdit() {
   const handleRemoveProduct = (productId) => {
     setAddedProducts((prevProducts) => {
       const productToRemove = prevProducts.find(
-        (product) => product.id === productId
+        (product) => product.id_produk === productId
       );
 
-      if (productToRemove) {
-        showToast(
-          `Successfully deleted ${productToRemove.nama_produk}!`,
-          "info"
-        );
+      if (!productToRemove) {
+        showToast("Product not found in added products!", "error");
+        return prevProducts;
       }
-      return prevProducts.filter((product) => product.id !== productId);
+
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product.id === productId
+            ? { ...product, stok: product.stok + productToRemove.quantity }
+            : product
+        )
+      );
+
+      showToast(`Successfully deleted ${productToRemove.nama_produk}!`, "info");
+      return prevProducts.filter((product) => product.id_produk !== productId);
     });
 
     closeDeleteModal();
@@ -747,7 +755,7 @@ function SalesEdit() {
                         <div className="flex justify-end space-x-3">
                           <button
                             onClick={() => {
-                              handleRemoveProduct(selectedProduct?.id);
+                              handleRemoveProduct(selectedProduct?.id_produk);
                             }}
                             className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
                           >
