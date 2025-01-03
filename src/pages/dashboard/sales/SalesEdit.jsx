@@ -403,7 +403,7 @@ function SalesEdit() {
 
       if (response.ok && result.success) {
         showToast("Penjualan berhasil diperbarui!", "success");
-        navigate(`/dashboard/sales/edit/${id}`);
+        navigate(`/dashboard/sales`);
       } else {
         const errorMessage = result.message || "Gagal memperbarui penjualan.";
         showToast(errorMessage, "error");

@@ -126,6 +126,17 @@ function SalesCreate() {
   };
 
   function handleUpdateQuantity(productId, newQuantity) {
+    const product = products.find((p) => p.id === productId);
+    if (!product) {
+      console.error("Produk tidak ditemukan.");
+      return;
+    }
+
+    if (newQuantity > product.stok) {
+      showToast(`Stok produk ${product.nama_produk} tidak cukup.`, "error");
+      return;
+    }
+
     setAddedProducts((prevProducts) =>
       prevProducts.map((product) =>
         product.id === productId
@@ -766,7 +777,7 @@ function SalesCreate() {
                   >
                     <option value="Pending">Pending</option>
                     <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
+                    {/* <option value="Cancelled">Cancelled</option> */}
                   </select>
                 </div>
                 <div className="flex-1">
