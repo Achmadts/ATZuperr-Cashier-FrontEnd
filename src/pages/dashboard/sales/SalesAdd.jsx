@@ -483,6 +483,10 @@ function SalesCreate() {
                         const quantity = quantities[product.id] || 0;
                         const remainingStock = product.stok - quantity;
                         const subtotal = product.harga_jual * quantity;
+                        const isProductAdded = addedProducts.some(
+                          (addedProduct) =>
+                            addedProduct.id_produk === product.id
+                        );
 
                         return (
                           <tr
@@ -515,10 +519,15 @@ function SalesCreate() {
                               <button
                                 type="button"
                                 className="btn btn-primary text-white"
-                                onClick={() => addProduct(product)}
+                                onClick={() =>
+                                  addProduct({
+                                    ...product,
+                                    id_produk: product.id,
+                                  })
+                                }
                                 disabled={quantity === 0}
                               >
-                                Add
+                                {isProductAdded ? "Update" : "Add"}
                               </button>
                             </td>
                           </tr>
@@ -601,7 +610,8 @@ function SalesCreate() {
                               )}`}</span>
                               <button
                                 className="px-2 py-1 text-xs bg-gray-300 rounded hover:bg-gray-400"
-                                onClick={() => {
+                                onClick={(e) => {
+                                  e.preventDefault();
                                   if (product.quantity === 1) {
                                     openDeleteModal(product);
                                   } else {

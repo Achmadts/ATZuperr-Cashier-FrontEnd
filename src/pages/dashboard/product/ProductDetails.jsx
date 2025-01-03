@@ -2,11 +2,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import SideBar from "../../../assets/components/Sidebar";
 import Navbar from "../../../assets/components/Navbar";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { Skeleton } from "@mui/material";
 import showToast from "../../../utils/showToast";
 import endpoints from "../../../constants/apiEndpoint";
-import { Link } from "react-router-dom";
 
 function ProductDetails() {
   const fileInputRef = useRef(null);

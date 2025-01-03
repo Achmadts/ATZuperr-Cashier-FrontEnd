@@ -652,14 +652,24 @@ const SalesTable = () => {
                   : sales.map((sale) => (
                       <tr key={sale.id}>
                         <td className="border border-gray-300 px-4 py-2">
-                          {sale.detail_penjualans?.map((detail) => (
-                            <div key={detail.id}>{detail.id_produk}</div>
-                          ))}
+                          {sale.detail_penjualans?.length > 1 ? (
+                            <div>{sale.detail_penjualans[0].id_produk}...</div>
+                          ) : (
+                            sale.detail_penjualans?.map((detail) => (
+                              <div key={detail.id}>{detail.id_produk}</div>
+                            ))
+                          )}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
-                          {sale.detail_penjualans?.map((detail) => (
-                            <div key={detail.id}>{detail.nama_produk}</div>
-                          ))}
+                          {sale.detail_penjualans?.length > 1 ? (
+                            <div>
+                              {sale.detail_penjualans[0].nama_produk}...
+                            </div>
+                          ) : (
+                            sale.detail_penjualans?.map((detail) => (
+                              <div key={detail.id}>{detail.nama_produk}</div>
+                            ))
+                          )}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           {sale.tanggal_penjualan}
