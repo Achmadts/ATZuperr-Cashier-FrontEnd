@@ -5,18 +5,14 @@ import { toast } from "react-toastify";
 import { Line } from "react-chartjs-2";
 import { Pie } from "react-chartjs-2";
 import { useTheme } from "@mui/material/styles";
-import { useMediaQuery } from "@mui/material";
+import { useMediaQuery, Skeleton } from "@mui/material";
 import {
   CurrencyExchangeOutlined,
   ShoppingCartOutlined,
   ArrowBackOutlined,
   BarChartOutlined,
 } from "@mui/icons-material";
-("@mui/icons-material");
-
 import Sidebar from "../../assets/components/Sidebar";
-import Skeleton from "react-loading-skeleton";
-import "react-loading-skeleton/dist/skeleton.css";
 import Navbar from "../../assets/components/Navbar";
 import endpoints from "../../constants/apiEndpoint";
 
@@ -47,40 +43,11 @@ ChartJS.register(
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
+  const [salesPurchasesData, setSalesPurchasesData] = useState(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [setCollapsed] = useState(isMobile);
   const navigate = useNavigate();
-
-  const salesPurchasesData = {
-    labels: ["11-08-21", "12-08-21", "14-08-21", "16-08-21", "17-08-21"],
-    datasets: [
-      {
-        label: "Sales",
-        data: [1000, 2000, 1500, 4000, 3000],
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 1,
-      },
-      {
-        label: "Purchases",
-        data: [500, 1000, 1500, 2500, 3500],
-        backgroundColor: "rgba(153, 102, 255, 0.2)",
-        borderColor: "rgba(153, 102, 255, 1)",
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const overviewData = {
-    labels: ["Sales", "Purchases", "Expenses"],
-    datasets: [
-      {
-        data: [3000, 2000, 1000],
-        backgroundColor: ["#36A2EB", "#FF5733", "#FFCA28"],
-      },
-    ],
-  };
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
@@ -120,7 +87,54 @@ const Dashboard = () => {
           }
         };
 
+        const fetchSalesPurchasesData = async () => {
+          try {
+            const response = await fetch(endpoints.getSalesPurchases, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to fetch sales and purchases data");
+            }
+
+            const data = await response.json();
+            const labels = data.map((item) => item.date);
+            const sales = data.map((item) => parseFloat(item.sales));
+            const purchases = data.map((item) => parseFloat(item.purchases));
+
+            const chartData = {
+              labels,
+              datasets: [
+                {
+                  label: "Sales",
+                  data: sales,
+                  backgroundColor: "rgba(75, 192, 192, 0.2)",
+                  borderColor: "rgba(75, 192, 192, 1)",
+                  borderWidth: 1,
+                },
+                {
+                  label: "Purchases",
+                  data: purchases,
+                  backgroundColor: "rgba(153, 102, 255, 0.2)",
+                  borderColor: "rgba(153, 102, 255, 1)",
+                  borderWidth: 1,
+                },
+              ],
+            };
+
+            setSalesPurchasesData(chartData);
+          } catch (error) {
+            console.error("Error fetching sales/purchases data:", error);
+            toast.error("Failed to fetch sales and purchases data.");
+          }
+        };
+
         fetchUserData();
+        fetchSalesPurchasesData();
       }
     } else {
       navigate("/");
@@ -132,6 +146,16 @@ const Dashboard = () => {
     localStorage.removeItem("last_interaction");
     toast.success("Successfully logged out!");
     navigate("/");
+  };
+
+  const overviewData = {
+    labels: ["Sales", "Purchases", "Expenses"],
+    datasets: [
+      {
+        data: [3000, 2000, 1000],
+        backgroundColor: ["#36A2EB", "#FF5733", "#FFCA28"],
+      },
+    ],
   };
 
   return (
@@ -187,14 +211,17 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-
             <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
               <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md flex-1">
                 <p className="text-lg sm:text-xl text-gray-700 mb-4">
                   Sales & Purchases of Last 7 Days
                 </p>
                 <div className="w-full">
-                  <Line data={salesPurchasesData} />
+                  {salesPurchasesData ? (
+                    <Line data={salesPurchasesData} />
+                  ) : (
+                    <Skeleton height={300} width="100%" />
+                  )}
                 </div>
               </div>
               <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md lg:max-w-md">
@@ -210,7 +237,6 @@ const Dashboard = () => {
         ) : (
           <div className="flex flex-col space-y-4 sm:space-y-6">
             <Skeleton height={40} width="100%" />
-
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
               {Array(4)
                 .fill(0)
@@ -220,27 +246,26 @@ const Dashboard = () => {
                     className="bg-white p-4 rounded-lg shadow-md flex items-center"
                   >
                     <Skeleton
-                      circle={true}
+                      variant="circular"
                       height={40}
                       width={40}
                       className="mr-4"
                     />
                     <div className="flex flex-col">
-                      <Skeleton height={20} width="150px" className="mb-2" />
-                      <Skeleton height={20} width="100px" />
+                      <Skeleton height={28} width="161px" className="mb-2" />
+                      <Skeleton height={28} width="80px" />
                     </div>
                   </div>
                 ))}
             </div>
-
             <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
-              <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md w-full">
-                <Skeleton height={30} width="80%" className="mb-4" />
-                <Skeleton height={300} width="100%" />
+              <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md flex-1">
+                <Skeleton height={50} width="80%" />
+                <Skeleton height={395} width={790} />
               </div>
               <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md w-full md:w-1/3">
                 <Skeleton height={50} width="80%" className="mb-4" />
-                <Skeleton height={300} width="100%" />
+                <Skeleton height={395} width="100%" />
               </div>
             </div>
           </div>

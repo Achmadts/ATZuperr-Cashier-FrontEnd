@@ -19,6 +19,7 @@ const endpoints = {
     // Sale
     sale: `${API_BASE_URL}/penjualan`,
     saleExport: `${API_BASE_URL}/penjualan-export`,
+    getSalesPurchases: `${API_BASE_URL}/sales-purchases`,
 };
 
 export default endpoints;
