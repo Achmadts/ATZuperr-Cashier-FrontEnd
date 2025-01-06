@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Skeleton } from "@mui/material";
 import Navbar from "../../../assets/components/Navbar";
 import SideBar from "../../../assets/components/Sidebar";
-import { SearchOutlined, AddOutlined } from "@mui/icons-material";
+import { SearchOutlined, RestoreFromTrashOutlined } from "@mui/icons-material";
 import endpoints from "../../../constants/apiEndpoint";
 import showToast from "../../../utils/showToast";
 import Modal from "react-modal";
@@ -285,16 +285,6 @@ function SalesEdit() {
       ...prev,
       [productId]: validValue,
     }));
-  };
-
-  const handleUpdateQuantity = (productId, newQuantity) => {
-    setAddedProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product.id === productId
-          ? { ...product, quantity: newQuantity }
-          : product
-      )
-    );
   };
 
   useEffect(() => {
@@ -703,15 +693,6 @@ function SalesEdit() {
                             className="flex justify-between items-center mb-2 border-b pb-2"
                           >
                             <div className="flex items-center gap-2">
-                              <AddOutlined
-                                className="cursor-pointer text-blue-500"
-                                onClick={() =>
-                                  handleUpdateQuantity(
-                                    product.id,
-                                    product.quantity + 1
-                                  )
-                                }
-                              />
                               <span className="text-gray-600">
                                 {product.nama_produk}
                               </span>
@@ -723,20 +704,13 @@ function SalesEdit() {
                                 "id-ID"
                               )}`}</span>
                               <button
-                                className="px-2 py-1 text-xs bg-gray-300 rounded hover:bg-gray-400"
+                                className="p-1 text-gray-600 bg-gray-300 rounded hover:bg-gray-400"
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  if (product.quantity === 1) {
                                     openDeleteModal(product);
-                                  } else {
-                                    handleUpdateQuantity(
-                                      product.id,
-                                      product.quantity - 1
-                                    );
-                                  }
                                 }}
                               >
-                                -
+                                <RestoreFromTrashOutlined />
                               </button>
                             </div>
                           </li>
