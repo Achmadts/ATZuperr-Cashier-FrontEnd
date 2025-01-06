@@ -11,6 +11,7 @@ import {
   ShoppingCartOutlined,
   ArrowBackOutlined,
   BarChartOutlined,
+  FilterAltOutlined,
 } from "@mui/icons-material";
 import Sidebar from "../../assets/components/Sidebar";
 import Navbar from "../../assets/components/Navbar";
@@ -44,6 +45,8 @@ ChartJS.register(
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const [salesPurchasesData, setSalesPurchasesData] = useState(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedFilter, setSelectedFilter] = useState("Last 7 Days");
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [setCollapsed] = useState(isMobile);
@@ -141,13 +144,6 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("last_interaction");
-    toast.success("Successfully logged out!");
-    navigate("/");
-  };
-
   const overviewData = {
     labels: ["Sales", "Purchases", "Expenses"],
     datasets: [
@@ -156,6 +152,32 @@ const Dashboard = () => {
         backgroundColor: ["#36A2EB", "#FF5733", "#FFCA28"],
       },
     ],
+  };
+
+  const handleFilterClick = () => {
+    setShowFilters((prev) => !prev);
+  };
+
+  const filterOptions = {
+    "7d": "Last 7 Days",
+    "1m": "Last 1 Month",
+    "6m": "Last 6 Months",
+    YTD: "Last Year To Date",
+    "1th": "Last 1 Year",
+    "5th": "Last 5 Years",
+    Maks: "Last All Time",
+  };
+
+  const handleFilterSelect = (key) => {
+    setSelectedFilter(filterOptions[key]);
+    setShowFilters(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("last_interaction");
+    toast.success("Successfully logged out!");
+    navigate("/");
   };
 
   return (
@@ -212,10 +234,31 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
-              <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md flex-1">
-                <p className="text-lg sm:text-xl text-gray-700 mb-4">
-                  Sales & Purchases of Last 7 Days
-                </p>
+              <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md flex-1 relative">
+                <div className="flex items-center justify-between mb-4">
+                  <p className="text-lg sm:text-xl text-gray-700">
+                    Sales & Purchases of {selectedFilter}
+                  </p>
+                  <FilterAltOutlined
+                    className="text-gray-500 cursor-pointer"
+                    onClick={handleFilterClick}
+                  />
+                </div>
+                {showFilters && (
+                  <div className="absolute right-4 top-14 bg-white border border-gray-300 rounded-lg shadow-md z-10 w-40">
+                    <ul className="py-2 text-gray-700">
+                      {Object.keys(filterOptions).map((key) => (
+                        <li
+                          key={key}
+                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                          onClick={() => handleFilterSelect(key)}
+                        >
+                          {filterOptions[key]}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 <div className="w-full">
                   {salesPurchasesData ? (
                     <Line data={salesPurchasesData} />
@@ -260,7 +303,10 @@ const Dashboard = () => {
             </div>
             <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
               <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md flex-1">
-                <Skeleton height={50} width="80%" />
+                <div className="flex items-center justify-between mb-4">
+                  <Skeleton height={50} width="60%" />
+                  <Skeleton height={50} width={30} />
+                </div>
                 <Skeleton height={395} width={790} />
               </div>
               <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md w-full md:w-1/3">
