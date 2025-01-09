@@ -33,6 +33,7 @@ import {
   ExpandLessOutlined,
   CategoryOutlined,
   AddCircleOutlined,
+  InventoryOutlined,
   AddCircleOutlineOutlined,
   QrCode2Outlined,
   UnfoldMoreDoubleOutlined,
@@ -314,10 +315,53 @@ const SideBar = () => {
               </Collapse>
               <MenuItem
                 icon={<ReceiptOutlined />}
-                onClick={() => navigate("/purchases")}
+                onClick={() => handleExpandClick("purchases")}
+                style={{
+                  color: location.pathname.includes("/dashboard/purchases")
+                    ? "#868dfb"
+                    : undefined,
+                }}
+                suffix={
+                  expandedMenu === "purchases" ? (
+                    <ExpandLessOutlined />
+                  ) : (
+                    <ExpandMoreOutlined />
+                  )
+                }
               >
-                Purchases (CS)
+                Purchase Action
               </MenuItem>
+              <Collapse in={expandedMenu === "purchases"}>
+                <Box
+                  pl={4}
+                  className="max-h-[300px] overflow-y-auto scrollbar-hide"
+                >
+                  <MenuItem
+                    icon={<InventoryOutlined />}
+                    style={{
+                      color:
+                        location.pathname === "/dashboard/purchases"
+                          ? "#868dfb"
+                          : undefined,
+                    }}
+                    onClick={() => navigate("/dashboard/purchases")}
+                  >
+                    Purchases
+                  </MenuItem>
+                  <MenuItem
+                    icon={<AddCircleOutlined />}
+                    style={{
+                      color:
+                        location.pathname === "/dashboard/purchases/add"
+                          ? "#868dfb"
+                          : undefined,
+                    }}
+                    onClick={() => navigate("/dashboard/purchases/add")}
+                  >
+                    Create Purchases
+                  </MenuItem>
+                </Box>
+              </Collapse>
               <MenuItem
                 icon={<PersonOutlined />}
                 onClick={() => handleExpandClick("sales")}
@@ -334,7 +378,7 @@ const SideBar = () => {
                   )
                 }
               >
-                Sales Action (OP)
+                Sales Action
               </MenuItem>
               <Collapse in={expandedMenu === "sales"}>
                 <Box
