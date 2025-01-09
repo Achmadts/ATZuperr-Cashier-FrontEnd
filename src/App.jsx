@@ -22,6 +22,10 @@ import SalesAdd from "./pages/dashboard/sales/SalesAdd";
 import SalesEdit from "./pages/dashboard/sales/SalesEdit";
 import SalesDetails from "./pages/dashboard/sales/SalesDetails";
 
+import Purchases from "./pages/dashboard/purchases/Purchases";
+import PurchasesAdd from "./pages/dashboard/purchases/PurchasesAdd";
+import PurchasesEdit from "./pages/dashboard/purchases/PurchasesEdit";
+import PurchasesDetails from "./pages/dashboard/purchases/PurchasesDetails";
 
 function App() {
   return (
@@ -41,12 +45,20 @@ function App() {
                 <Route path="products" element={<Product />} />
                 <Route path="products/edit/:id" element={<ProductEdit />} />
                 <Route path="products/add" element={<ProductAdd />} />
-                <Route path="products/details/:id" element={<ProductDetails />} />
+                <Route
+                  path="products/details/:id"
+                  element={<ProductDetails />}
+                />
 
                 <Route path="sales" element={<Sales />} />
                 <Route path="sales/edit/:id" element={<SalesEdit />} />
                 <Route path="sales/add" element={<SalesAdd />} />
                 <Route path="sales/details/:id" element={<SalesDetails />} />
+
+                <Route path="purchases" element={<Purchases />} />
+                <Route path="purchases/edit/:id" element={<PurchasesEdit />} />
+                <Route path="purchases/add" element={<PurchasesAdd />} />
+                <Route path="purchases/details/:id" element={<PurchasesDetails />} />
                 <Route
                   path="profile-password/:id"
                   element={<UpdateProfileAndPassword />}

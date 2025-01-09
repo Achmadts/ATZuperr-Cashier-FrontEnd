@@ -7,6 +7,7 @@ const endpoints = {
     user: `${API_BASE_URL}/user`,
     dashboard: `${API_BASE_URL}/dashboard`,
     updateProfile: `${API_BASE_URL}/users`,
+    getSalesPurchases: `${API_BASE_URL}/sales-purchases`,
 
     // Kategori
     category: `${API_BASE_URL}/kategori`,
@@ -16,10 +17,13 @@ const endpoints = {
     product: `${API_BASE_URL}/produk`,
     productExport: `${API_BASE_URL}/produk-export`,
 
-    // Sale
+    // Sales
     sale: `${API_BASE_URL}/penjualan`,
     saleExport: `${API_BASE_URL}/penjualan-export`,
-    getSalesPurchases: `${API_BASE_URL}/sales-purchases`,
+    
+    // Purchases
+    purchase: `${API_BASE_URL}/pembelian`,
+    purchaseExport: `${API_BASE_URL}/pembelian-export`,
 };
 
 export default endpoints;
