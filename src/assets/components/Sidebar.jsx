@@ -26,7 +26,6 @@ import {
   PersonOutlined,
   CloseOutlined,
   LogoutOutlined,
-  CalendarTodayOutlined,
   SettingsOutlined,
   MenuOutlined,
   ExpandMoreOutlined,
@@ -207,7 +206,6 @@ const SideBar = () => {
         <Box pl={collapsed ? undefined : "5%"}>
           {menuLoading ? (
             <Box>
-              <Skeleton variant="text" width="70%" height={50} />
               <Skeleton variant="text" width="70%" height={50} />
               <Skeleton variant="text" width="70%" height={50} />
               <Skeleton variant="text" width="70%" height={50} />
@@ -411,12 +409,6 @@ const SideBar = () => {
                   </MenuItem>
                 </Box>
               </Collapse>
-              <MenuItem
-                icon={<CalendarTodayOutlined />}
-                onClick={() => navigate("/expenses")}
-              >
-                Expenses (CS)
-              </MenuItem>
               <MenuItem
                 icon={<SettingsOutlined />}
                 onClick={() => navigate(`/dashboard/profile-password/${id}`)}
