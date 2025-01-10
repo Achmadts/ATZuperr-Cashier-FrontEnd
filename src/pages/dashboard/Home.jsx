@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Line } from "react-chartjs-2";
-import { Pie } from "react-chartjs-2";
+import { Line, Pie } from "react-chartjs-2";
 import { useTheme } from "@mui/material/styles";
 import { useMediaQuery, Skeleton } from "@mui/material";
 import {
@@ -45,6 +44,7 @@ ChartJS.register(
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const [salesPurchasesData, setSalesPurchasesData] = useState(null);
+  const [overviewData, setOverviewData] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("Last 7 Days");
   const theme = useTheme();
@@ -105,23 +105,38 @@ const Dashboard = () => {
             }
 
             const data = await response.json();
-            const labels = data.map((item) => item.date);
-            const sales = data.map((item) => parseFloat(item.sales));
-            const purchases = data.map((item) => parseFloat(item.purchases));
+            const salesLabels = data.sales.map((item) => item.date);
+            const salesData = data.sales.map((item) =>
+              parseFloat(item.total_sales)
+            );
 
+            const purchasesLabels = data.purchases.map((item) => item.date);
+            const purchasesData = data.purchases.map((item) =>
+              parseFloat(item.total_purchases)
+            );
+
+            const labels = [...new Set([...salesLabels, ...purchasesLabels])];
             const chartData = {
               labels,
               datasets: [
                 {
                   label: "Sales",
-                  data: sales,
+                  data: labels.map((date) =>
+                    salesLabels.includes(date)
+                      ? salesData[salesLabels.indexOf(date)]
+                      : 0
+                  ),
                   backgroundColor: "rgba(75, 192, 192, 0.2)",
                   borderColor: "rgba(75, 192, 192, 1)",
                   borderWidth: 1,
                 },
                 {
                   label: "Purchases",
-                  data: purchases,
+                  data: labels.map((date) =>
+                    purchasesLabels.includes(date)
+                      ? purchasesData[purchasesLabels.indexOf(date)]
+                      : 0
+                  ),
                   backgroundColor: "rgba(153, 102, 255, 0.2)",
                   borderColor: "rgba(153, 102, 255, 1)",
                   borderWidth: 1,
@@ -130,6 +145,27 @@ const Dashboard = () => {
             };
 
             setSalesPurchasesData(chartData);
+
+            const totalSalesQuantity = data.sales.reduce(
+              (acc, item) => acc + parseInt(item.total_sales_quantity, 10),
+              0
+            );
+            const totalPurchasesQuantity = data.purchases.reduce(
+              (acc, item) => acc + parseInt(item.total_purchases_quantity, 10),
+              0
+            );
+
+            const overviewChartData = {
+              labels: ["Sales Quantity", "Purchases Quantity"],
+              datasets: [
+                {
+                  data: [totalSalesQuantity, totalPurchasesQuantity],
+                  backgroundColor: ["#36A2EB", "#FF5733"],
+                },
+              ],
+            };
+
+            setOverviewData(overviewChartData);
           } catch (error) {
             console.error("Error fetching sales/purchases data:", error);
             toast.error("Failed to fetch sales and purchases data.");
@@ -143,16 +179,6 @@ const Dashboard = () => {
       navigate("/");
     }
   }, [navigate]);
-
-  const overviewData = {
-    labels: ["Sales", "Purchases", "Expenses"],
-    datasets: [
-      {
-        data: [3000, 2000, 1000],
-        backgroundColor: ["#36A2EB", "#FF5733", "#FFCA28"],
-      },
-    ],
-  };
 
   const handleFilterClick = () => {
     setShowFilters((prev) => !prev);
