@@ -105,7 +105,7 @@ const PurchasesTable = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch sales.");
+        throw new Error("Failed to fetch purchases.");
       }
 
       const result = await response.json();
@@ -130,7 +130,7 @@ const PurchasesTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, showEntries, debouncedSearchTerm]);
 
-  const handleDeleteSale = async (id) => {
+  const handleDeletePurchase = async (id) => {
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch(`${endpoints.purchase}/${id}`, {
@@ -565,7 +565,7 @@ const PurchasesTable = () => {
                         className="border border-gray-300 px-4 py-2"
                         style={{ width: "10.71%" }}
                       >
-                        Sale date
+                        Purchase date
                       </th>
                       <th
                         className="border border-gray-300 px-4 py-2"
@@ -728,7 +728,7 @@ const PurchasesTable = () => {
                                 className="btn btn-error"
                                 onClick={() => {
                                   if (selectedPurchase && selectedPurchase.id) {
-                                    handleDeleteSale(selectedPurchase.id);
+                                    handleDeletePurchase(selectedPurchase.id);
                                   } else {
                                     showToast(
                                       "Gagal menghapus. Pembelian tidak valid.",
@@ -796,7 +796,7 @@ const PurchasesTable = () => {
                                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
                                 onClick={() => {
                                   if (selectedPurchase) {
-                                    handleDeleteSale(selectedPurchase);
+                                    handleDeletePurchase(selectedPurchase);
                                   }
                                   closeModalDelete(true);
                                 }}
