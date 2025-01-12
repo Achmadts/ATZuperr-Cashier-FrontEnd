@@ -157,6 +157,16 @@ const Dashboard = () => {
     }
   };
 
+  const handleFilterSelect = (key) => {
+    const days = filterMapping[key];
+    setSelectedFilter(filterOptions[key]);
+    fetchSalesPurchasesData(days);
+  };
+
+  const handleFilterClick = () => {
+    setShowFilters((prev) => !prev);
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     const lastInteraction = localStorage.getItem("last_interaction");
@@ -202,16 +212,6 @@ const Dashboard = () => {
       navigate("/");
     }
   }, [navigate]);
-
-  const handleFilterSelect = (key) => {
-    const days = filterMapping[key];
-    setSelectedFilter(filterOptions[key]);
-    fetchSalesPurchasesData(days);
-  };
-
-  const handleFilterClick = () => {
-    setShowFilters((prev) => !prev);
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
