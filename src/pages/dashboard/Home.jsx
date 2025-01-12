@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { Line, Pie } from "react-chartjs-2";
 import { useTheme } from "@mui/material/styles";
 import { useMediaQuery, Skeleton } from "@mui/material";
+import { format, parseISO } from "date-fns";
 import {
   CurrencyExchangeOutlined,
   ShoppingCartOutlined,
@@ -72,7 +73,7 @@ const Dashboard = () => {
     Maks: 0,
   };
 
-  const fetchSalesPurchasesData = async (days) => {
+  const fetchSalesPurchasesData = async (days, filterKey) => {
     const token = localStorage.getItem("access_token");
     try {
       const response = await fetch(
@@ -91,18 +92,55 @@ const Dashboard = () => {
       }
 
       const data = await response.json();
+      // console.log("Raw Data from Backend:", data);
 
-      const salesLabels = data.sales.map((item) => item.date);
+      const salesLabels = data.sales.map((item) => item.period.toString());
       const salesData = data.sales.map((item) => parseFloat(item.total_sales));
 
-      const purchasesLabels = data.purchases.map((item) => item.date);
+      const purchasesLabels = data.purchases.map((item) =>
+        item.period.toString()
+      );
       const purchasesData = data.purchases.map((item) =>
         parseFloat(item.total_purchases)
       );
 
       const labels = [...new Set([...salesLabels, ...purchasesLabels])];
+      // console.log("Combined Labels:", labels);
+
+      const formattedLabels = labels.map((date) => {
+        if (!date) return "N/A";
+
+        let parsedDate;
+        if (!isNaN(date)) {
+          return date;
+        }
+
+        try {
+          parsedDate = parseISO(date);
+          // eslint-disable-next-line no-unused-vars
+        } catch (error) {
+          const parts = date.split("-");
+          if (parts.length === 2) {
+            const [year, month] = parts;
+            parsedDate = new Date(year, month - 1);
+          } else if (parts.length === 1) {
+            parsedDate = new Date(parts[0]);
+          } else {
+            return date;
+          }
+        }
+
+        if (["6m", "YTD", "1th"].includes(filterKey)) {
+          return format(parsedDate, "MMMM");
+        } else if (["5th", "Maks"].includes(filterKey)) {
+          return format(parsedDate, "yyyy");
+        } else {
+          return format(parsedDate, "dd/MM/yyyy");
+        }
+      });
+
       const chartData = {
-        labels,
+        labels: formattedLabels || [],
         datasets: [
           {
             label: "Sales",
@@ -144,15 +182,16 @@ const Dashboard = () => {
         labels: ["Sales Quantity", "Purchases Quantity"],
         datasets: [
           {
-            data: [totalSalesQuantity, totalPurchasesQuantity],
+            data: [totalSalesQuantity || 0, totalPurchasesQuantity || 0],
             backgroundColor: ["#36A2EB", "#FF5733"],
           },
         ],
       };
 
       setOverviewData(overviewChartData);
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
-      console.error("Error fetching sales/purchases data:", error);
+      // console.error("Error fetching sales/purchases data:", error);
       toast.error("Failed to fetch sales and purchases data.");
     }
   };
@@ -160,7 +199,7 @@ const Dashboard = () => {
   const handleFilterSelect = (key) => {
     const days = filterMapping[key];
     setSelectedFilter(filterOptions[key]);
-    fetchSalesPurchasesData(days);
+    fetchSalesPurchasesData(days, key);
   };
 
   const handleFilterClick = () => {
@@ -198,8 +237,9 @@ const Dashboard = () => {
             } else {
               throw new Error("Invalid data structure");
             }
+          // eslint-disable-next-line no-unused-vars
           } catch (error) {
-            console.error("Error fetching user data:", error);
+            // console.error("Error fetching user data:", error);
             toast.error("Failed to fetch user data.");
             navigate("/");
           }
@@ -300,10 +340,13 @@ const Dashboard = () => {
                   </div>
                 )}
                 <div className="w-full">
-                  {salesPurchasesData ? (
+                  {salesPurchasesData &&
+                  salesPurchasesData.labels?.length > 0 ? (
                     <Line data={salesPurchasesData} />
                   ) : (
-                    <Skeleton height={300} width="100%" />
+                    <p className="text-gray-500 text-center">
+                      No data available for the selected filter.
+                    </p>
                   )}
                 </div>
               </div>

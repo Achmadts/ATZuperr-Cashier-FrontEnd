@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@date-io/date-fns':
+    specifier: 1.x
+    version: 1.3.13(date-fns@4.1.0)
   '@emotion/react':
     specifier: ^11.13.5
     version: 11.13.5(@types/react@18.3.12)(react@18.3.1)
@@ -23,6 +26,9 @@ dependencies:
   chart.js:
     specifier: ^4.4.6
     version: 4.4.6
+  date-fns:
+    specifier: ^4.1.0
+    version: 4.1.0
   jwt-decode:
     specifier: ^4.0.0
     version: 4.0.0
@@ -287,6 +293,19 @@ packages:
     dependencies:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
+
+  /@date-io/core@1.3.13:
+    resolution: {integrity: sha512-AlEKV7TxjeK+jxWVKcCFrfYAk8spX9aCyiToFIiLPtfQbsjmRGLIhb5VZgptQcJdHtLXo7+m0DuurwFgUToQuA==}
+    dev: false
+
+  /@date-io/date-fns@1.3.13(date-fns@4.1.0):
+    resolution: {integrity: sha512-yXxGzcRUPcogiMj58wVgFjc9qUYrCnnU9eLcyNbsQCmae4jPuZCDoIBR21j8ZURsM7GRtU62VOw5yNd4dDHunA==}
+    peerDependencies:
+      date-fns: ^2.0.0
+    dependencies:
+      '@date-io/core': 1.3.13
+      date-fns: 4.1.0
+    dev: false
 
   /@emotion/babel-plugin@11.13.5:
     resolution: {integrity: sha512-pxHCpT2ex+0q+HH91/zsdHkw/lXd468DIN2zvfvLtPKLLMo6gQj7oLObq8PhkrxOZb/gGCq03S3Z7PDhS8pduQ==}
@@ -1530,6 +1549,10 @@ packages:
       es-errors: 1.3.0
       is-data-view: 1.0.1
     dev: true
+
+  /date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
+    dev: false
 
   /debug@4.3.7:
     resolution: {integrity: sha512-Er2nc/H7RrMXZBFCEim6TCmMk02Z8vLC2Rbi1KEBggpo0fS6l0S1nnapwmIi3yW/+GOJap1Krg4w0Hg80oCqgQ==}
